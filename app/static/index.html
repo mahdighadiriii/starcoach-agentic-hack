@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agentic Trader</title>
+<style>
+  :root { --bg:#0f1115; --card:#181b22; --fg:#e6e8ee; --muted:#8a90a0; --buy:#22c55e; --sell:#ef4444; --hold:#a3a3a3; --accent:#6366f1; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:14px/1.5 system-ui, sans-serif; background:var(--bg); color:var(--fg); }
+  header { display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; padding:16px; border-bottom:1px solid #262a33; }
+  h1 { font-size:18px; margin:0; }
+  .pills span { display:inline-block; padding:2px 10px; border-radius:99px; background:var(--card); margin-right:6px; font-size:12px; }
+  .pills .warn { background:#7c2d12; } .pills .ok { background:#14532d; }
+  button { background:var(--accent); color:#fff; border:0; border-radius:8px; padding:8px 14px; cursor:pointer; font-weight:600; }
+  button.danger { background:var(--sell); } button.ghost { background:var(--card); }
+  main { padding:16px; max-width:1100px; margin:0 auto; }
+  .entry { background:var(--card); border-radius:12px; padding:14px 16px; margin-bottom:10px; border-left:4px solid var(--hold); }
+  .entry.BUY { border-color:var(--buy); } .entry.SELL { border-color:var(--sell); } .entry.ERROR { border-color:#f59e0b; }
+  .row { display:flex; flex-wrap:wrap; gap:8px 16px; align-items:baseline; }
+  .act { font-weight:700; } .muted { color:var(--muted); font-size:12px; }
+  .reason { margin:6px 0; }
+  .tag { font-size:11px; padding:1px 8px; border-radius:99px; }
+  .tag.y { background:#14532d; } .tag.n { background:#3f3f46; }
+  .flow { font-size:12px; color:var(--muted); margin-bottom:12px; }
+  .flow b { color:var(--fg); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Agentic Trader</h1>
+  <div class="pills" id="status"></div>
+  <div>
+    <button onclick="runOnce()">Run cycle</button>
+    <button class="ghost" id="loopBtn" onclick="toggleLoop()">Autoloop: off</button>
+    <button class="danger" onclick="kill()">Kill switch</button>
+  </div>
+</header>
+<main>
+  <div class="flow">Pipeline: <b>observe</b> → <b>analyze (LLM)</b> → <b>risk gate (code)</b> → <b>execute</b> → <b>journal</b></div>
+  <div id="journal"><p class="muted">No decisions yet — press “Run cycle”.</p></div>
+</main>
+<script>
+let health = {};
+const fmt = n => n == null ? "–" : Number(n).toLocaleString(undefined, {maximumFractionDigits: 4});
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+async function refresh() {
+  health = await (await fetch("/api/health")).json();
+  document.getElementById("status").innerHTML =
+    `<span class="${health.dry_run ? "ok" : "warn"}">${health.dry_run ? "DRY RUN" : "LIVE"}</span>` +
+    `<span>LLM: ${health.llm ? "on" : "rule-based"}</span>` +
+    `<span>${health.symbols.join(", ")}</span>` +
+    (health.halted ? `<span class="warn">HALTED</span>` : "");
+  document.getElementById("loopBtn").textContent = "Autoloop: " + (health.autoloop ? "on" : "off");
+  const rows = await (await fetch("/api/journal")).json();
+  if (!rows.length) return;
+  document.getElementById("journal").innerHTML = rows.map(r => `
+    <div class="entry ${esc(r.action)}">
+      <div class="row">
+        <span class="act">${esc(r.action)}</span><span>${esc(r.symbol)}</span>
+        <span>@ ${fmt(r.price)}</span>
+        <span class="muted">conf ${fmt(r.confidence)} · size ${fmt(r.size_quote)}</span>
+        <span class="tag ${r.approved ? "y" : "n"}">${r.approved ? "executed" + (r.dry_run ? " (dry)" : "") : "blocked"}</span>
+        <span class="muted">${new Date(r.ts * 1000).toLocaleTimeString()}</span>
+      </div>
+      <div class="reason">${esc(r.reasoning)}</div>
+      <div class="muted">risk: ${esc((r.risk_notes || []).join(" · "))}
+        ${r.indicators ? ` · RSI ${fmt(r.indicators.rsi_14)} · SMA12 ${fmt(r.indicators.sma_12)} · SMA26 ${fmt(r.indicators.sma_26)}` : ""}</div>
+    </div>`).join("");
+}
+async function runOnce() { await fetch("/api/run", {method: "POST"}); refresh(); }
+async function toggleLoop() { await fetch("/api/autoloop/" + (health.autoloop ? "off" : "on"), {method: "POST"}); refresh(); }
+async function kill() { await fetch("/api/kill", {method: "POST"}); refresh(); }
+refresh(); setInterval(refresh, 5000);
+</script>
+</body>
+</html>
