@@ -1,0 +1,19 @@
+# Exactly ONE trader service may run per account: the SQLite file lock enforces this per volume.
+services:
+  trader:
+    build: .
+    command: ["shadow"]          # live requires an explicit, authorized change to ["live"]
+    env_file: .env
+    restart: unless-stopped
+    volumes:
+      - ./state:/app/state
+      - ./evidence:/app/evidence
+  monitor:
+    build: .
+    command: ["monitor"]
+    environment:
+      MONITOR_HOST: 0.0.0.0            # published only on the host loopback below
+    volumes:
+      - ./state:/app/state             # read-only SQLite connection, but WAL readers need the -shm file
+    ports:
+      - "127.0.0.1:8787:8787"

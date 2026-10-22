@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+state/
+evidence/
+data/
+.pytest_cache/
+reports/ai_cache/

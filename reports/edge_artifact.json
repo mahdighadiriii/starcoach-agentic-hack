@@ -1,0 +1,23 @@
+{
+  "families": {
+    "DONCHIAN_TREND": {
+      "trades": 69,
+      "mean_net_bps": -105.0,
+      "lcb5_net_bps": -142.4,
+      "win_rate": 0.246,
+      "profit_factor": 0.257,
+      "period_utc": [
+        1771894800,
+        1785718800
+      ],
+      "source": "proxy backtest (train split)"
+    }
+  },
+  "created_from": "train split, baseline selector",
+  "train": [
+    "2026-02-24",
+    "2026-08-03"
+  ],
+  "data_source": "binance_proxy",
+  "config_hash": "173d14165db08f257939b4c1ed26722a06e86ee34a785e65ca689fdb24d8f969"
+}
