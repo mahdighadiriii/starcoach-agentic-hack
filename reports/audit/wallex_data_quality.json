@@ -1,0 +1,78 @@
+{
+  "start": 1791489600,
+  "end": 1792699200,
+  "markets": {
+    "BTCTMN": {
+      "rows": 20145,
+      "expected_rows": 20160,
+      "coverage": 0.9993,
+      "gaps": 2,
+      "errors": [],
+      "first": 1791489600,
+      "last": 1792699140
+    },
+    "ETHTMN": {
+      "rows": 20119,
+      "expected_rows": 20160,
+      "coverage": 0.998,
+      "gaps": 2,
+      "errors": [],
+      "first": 1791489600,
+      "last": 1792699140
+    },
+    "SOLTMN": {
+      "rows": 20134,
+      "expected_rows": 20160,
+      "coverage": 0.9987,
+      "gaps": 2,
+      "errors": [],
+      "first": 1791489600,
+      "last": 1792699140
+    },
+    "XRPTMN": {
+      "rows": 20137,
+      "expected_rows": 20160,
+      "coverage": 0.9989,
+      "gaps": 3,
+      "errors": [],
+      "first": 1791489600,
+      "last": 1792699140
+    },
+    "DOGETMN": {
+      "rows": 20140,
+      "expected_rows": 20160,
+      "coverage": 0.999,
+      "gaps": 3,
+      "errors": [],
+      "first": 1791489600,
+      "last": 1792699140
+    },
+    "BNBTMN": {
+      "rows": 20141,
+      "expected_rows": 20160,
+      "coverage": 0.9991,
+      "gaps": 3,
+      "errors": [],
+      "first": 1791489600,
+      "last": 1792699140
+    },
+    "ADATMN": {
+      "rows": 20144,
+      "expected_rows": 20160,
+      "coverage": 0.9992,
+      "gaps": 2,
+      "errors": [],
+      "first": 1791489600,
+      "last": 1792699140
+    },
+    "TRXTMN": {
+      "rows": 20138,
+      "expected_rows": 20160,
+      "coverage": 0.9989,
+      "gaps": 2,
+      "errors": [],
+      "first": 1791489600,
+      "last": 1792699140
+    }
+  }
+}

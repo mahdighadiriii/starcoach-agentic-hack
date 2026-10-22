@@ -1,0 +1,162 @@
+{
+  "generated_at": "2026-10-22T10:17:33.486724+00:00",
+  "data_source": "binance_proxy",
+  "proxy": true,
+  "symbols": [
+    "BTCUSDT",
+    "ETHUSDT",
+    "SOLUSDT",
+    "XRPUSDT",
+    "DOGEUSDT",
+    "BNBUSDT",
+    "ADAUSDT",
+    "TRXUSDT"
+  ],
+  "train": [
+    "2026-02-24",
+    "2026-08-03"
+  ],
+  "test": [
+    "2026-08-03",
+    "2026-10-22"
+  ],
+  "families": [
+    "DONCHIAN_TREND"
+  ],
+  "timeframes_s": [
+    3600,
+    14400
+  ],
+  "cost_model": {
+    "fee_fraction": "0.0035",
+    "half_spread_bps": "8",
+    "slippage_bps": "5"
+  },
+  "config_hash": "173d14165db08f257939b4c1ed26722a06e86ee34a785e65ca689fdb24d8f969",
+  "results": {
+    "baseline_train": {
+      "label": "baseline_train",
+      "net_pnl_tmn": -601386,
+      "net_return_pct": -12.028,
+      "max_drawdown_pct": 12.264,
+      "trades": 69,
+      "win_rate": 0.246,
+      "profit_factor": 0.229,
+      "avg_pnl_per_trade_tmn": -8716,
+      "avg_net_bps_per_trade": -105.0,
+      "fees_tmn": 405495,
+      "exit_reasons": {
+        "LIQUIDATION": 21,
+        "TRAIL_STOP": 15,
+        "STOP": 33
+      },
+      "by_family": {
+        "DONCHIAN_TREND": {
+          "trades": 69,
+          "net_pnl_tmn": -601386,
+          "mean_net_bps": -105.0,
+          "win_rate": 0.246
+        }
+      },
+      "episodes": 53,
+      "episode_return_pct": {
+        "mean": -0.241,
+        "median": 0.0,
+        "worst": -1.421,
+        "best": 1.037,
+        "positive_share": 0.038
+      },
+      "decision_points": 192,
+      "selected": 192,
+      "held": 0,
+      "selector_sources": {
+        "baseline": 192
+      },
+      "differs_from_baseline": 0
+    },
+    "baseline_test": {
+      "label": "baseline_test",
+      "net_pnl_tmn": -165520,
+      "net_return_pct": -3.31,
+      "max_drawdown_pct": 7.008,
+      "trades": 46,
+      "win_rate": 0.283,
+      "profit_factor": 0.693,
+      "avg_pnl_per_trade_tmn": -3598,
+      "avg_net_bps_per_trade": -30.0,
+      "fees_tmn": 279863,
+      "exit_reasons": {
+        "STOP": 25,
+        "LIQUIDATION": 10,
+        "TRAIL_STOP": 11
+      },
+      "by_family": {
+        "DONCHIAN_TREND": {
+          "trades": 46,
+          "net_pnl_tmn": -165520,
+          "mean_net_bps": -30.0,
+          "win_rate": 0.283
+        }
+      },
+      "episodes": 26,
+      "episode_return_pct": {
+        "mean": -0.126,
+        "median": 0.0,
+        "worst": -1.256,
+        "best": 2.904,
+        "positive_share": 0.154
+      },
+      "decision_points": 113,
+      "selected": 113,
+      "held": 0,
+      "selector_sources": {
+        "baseline": 113
+      },
+      "differs_from_baseline": 0
+    }
+  },
+  "edge_artifact": {
+    "DONCHIAN_TREND": {
+      "trades": 69,
+      "mean_net_bps": -105.0,
+      "lcb5_net_bps": -142.4,
+      "win_rate": 0.246,
+      "profit_factor": 0.257,
+      "period_utc": [
+        1771894800,
+        1785718800
+      ],
+      "source": "proxy backtest (train split)"
+    }
+  },
+  "fee_sensitivity_test_baseline": {
+    "0.0035": {
+      "net_return_pct": -3.31,
+      "max_drawdown_pct": 7.008,
+      "trades": 46,
+      "profit_factor": 0.693,
+      "avg_net_bps_per_trade": -30.0
+    },
+    "0.0025": {
+      "net_return_pct": -1.957,
+      "max_drawdown_pct": 6.377,
+      "trades": 46,
+      "profit_factor": 0.813,
+      "avg_net_bps_per_trade": -9.9
+    },
+    "0.0015": {
+      "net_return_pct": -0.288,
+      "max_drawdown_pct": 5.576,
+      "trades": 46,
+      "profit_factor": 0.971,
+      "avg_net_bps_per_trade": 10.1
+    },
+    "0": {
+      "net_return_pct": 2.851,
+      "max_drawdown_pct": 3.972,
+      "trades": 46,
+      "profit_factor": 1.314,
+      "avg_net_bps_per_trade": 40.2
+    }
+  }
+}

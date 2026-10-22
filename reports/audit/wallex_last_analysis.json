@@ -1,0 +1,648 @@
+{
+  "DONCHIAN_TREND": {
+    "BTCTMN": {
+      "regime": "INSUFFICIENT_DATA",
+      "reason": "insufficient data",
+      "features": {
+        "candle_gaps": true
+      },
+      "last_signal_open": 1792695600,
+      "last_context_open": 1792684800
+    },
+    "ETHTMN": {
+      "regime": "INSUFFICIENT_DATA",
+      "reason": "insufficient data",
+      "features": {
+        "candle_gaps": true
+      },
+      "last_signal_open": 1792695600,
+      "last_context_open": 1792684800
+    },
+    "SOLTMN": {
+      "regime": "INSUFFICIENT_DATA",
+      "reason": "insufficient data",
+      "features": {
+        "candle_gaps": true
+      },
+      "last_signal_open": 1792695600,
+      "last_context_open": 1792684800
+    },
+    "XRPTMN": {
+      "regime": "INSUFFICIENT_DATA",
+      "reason": "insufficient data",
+      "features": {
+        "candle_gaps": true
+      },
+      "last_signal_open": 1792695600,
+      "last_context_open": 1792684800
+    },
+    "DOGETMN": {
+      "regime": "INSUFFICIENT_DATA",
+      "reason": "insufficient data",
+      "features": {
+        "candle_gaps": true
+      },
+      "last_signal_open": 1792695600,
+      "last_context_open": 1792684800
+    },
+    "BNBTMN": {
+      "regime": "INSUFFICIENT_DATA",
+      "reason": "insufficient data",
+      "features": {
+        "candle_gaps": true
+      },
+      "last_signal_open": 1792695600,
+      "last_context_open": 1792684800
+    },
+    "ADATMN": {
+      "regime": "INSUFFICIENT_DATA",
+      "reason": "insufficient data",
+      "features": {
+        "candle_gaps": true
+      },
+      "last_signal_open": 1792695600,
+      "last_context_open": 1792684800
+    },
+    "TRXTMN": {
+      "regime": "INSUFFICIENT_DATA",
+      "reason": "insufficient data",
+      "features": {
+        "candle_gaps": true
+      },
+      "last_signal_open": 1792695600,
+      "last_context_open": 1792684800
+    }
+  },
+  "SCALP_REVERSION": {
+    "BTCTMN": {
+      "regime": "RANGE",
+      "reason": "RANGE, no setup (SCALP_REVERSION: context_uptrend, atr_floor, prior_rsi_oversold, bullish_recovery)",
+      "features": {
+        "close": 22104029602.0,
+        "ema20": 22114154382.283333,
+        "ema50": 22128434821.09876,
+        "atr14": 30277444.113784194,
+        "atr_pct": 0.0013697703,
+        "rsi14": 47.4729093897,
+        "volume_ratio": 2.2792129828,
+        "prior_high20": 22136658023.0,
+        "ema20_ctx": 22149721569.2901,
+        "ema50_ctx": 22022935789.95361,
+        "ema20_ctx_slope3": -10406032.647151947,
+        "ret_1": -0.0014739541,
+        "ret_4": -0.0008063655,
+        "ret_16": 0.002450317,
+        "realized_vol_32": 0.000987284,
+        "distance_ema20_atr": -0.3344000981,
+        "regime": "RANGE",
+        "prior_high_scalp": 22136658023.0,
+        "setup_checks": {
+          "SCALP_REVERSION": {
+            "context_uptrend": false,
+            "atr_floor": false,
+            "prior_rsi_oversold": false,
+            "bullish_recovery": false
+          }
+        }
+      },
+      "last_signal_open": 1792698900,
+      "last_context_open": 1792695600
+    },
+    "ETHTMN": {
+      "regime": "RANGE",
+      "reason": "RANGE, no setup (SCALP_REVERSION: context_uptrend, atr_floor, prior_rsi_oversold, bullish_recovery)",
+      "features": {
+        "close": 647701890.0,
+        "ema20": 648188789.2740141,
+        "ema50": 648886023.5005515,
+        "atr14": 1164125.8898465596,
+        "atr_pct": 0.0017973174,
+        "rsi14": 47.1043804405,
+        "volume_ratio": 0.756703567,
+        "prior_high20": 650006002.0,
+        "ema20_ctx": 651319587.3280568,
+        "ema50_ctx": 648556060.4423633,
+        "ema20_ctx_slope3": -1022249.2418708801,
+        "ret_1": 2.32e-08,
+        "ret_4": -0.0035446477,
+        "ret_16": 0.0030509804,
+        "realized_vol_32": 0.0015177932,
+        "distance_ema20_atr": -0.4182531101,
+        "regime": "RANGE",
+        "prior_high_scalp": 650006002.0,
+        "setup_checks": {
+          "SCALP_REVERSION": {
+            "context_uptrend": false,
+            "atr_floor": false,
+            "prior_rsi_oversold": false,
+            "bullish_recovery": false
+          }
+        }
+      },
+      "last_signal_open": 1792698900,
+      "last_context_open": 1792695600
+    },
+    "SOLTMN": {
+      "regime": "RANGE",
+      "reason": "RANGE, no setup (SCALP_REVERSION: context_uptrend, atr_floor, prior_rsi_oversold, bullish_recovery)",
+      "features": {
+        "close": 28109513.0,
+        "ema20": 28136377.969337184,
+        "ema50": 28209119.764743395,
+        "atr14": 58098.3192606737,
+        "atr_pct": 0.0020668561,
+        "rsi14": 46.5836559156,
+        "volume_ratio": 0.2082800498,
+        "prior_high20": 28268559.0,
+        "ema20_ctx": 28257059.494510416,
+        "ema50_ctx": 28122071.05389057,
+        "ema20_ctx_slope3": -11035.7317122035,
+        "ret_1": 0.0,
+        "ret_4": -7.34217e-05,
+        "ret_16": -0.00145596,
+        "realized_vol_32": 0.0028022568,
+        "distance_ema20_atr": -0.4624052757,
+        "regime": "RANGE",
+        "prior_high_scalp": 28268559.0,
+        "setup_checks": {
+          "SCALP_REVERSION": {
+            "context_uptrend": false,
+            "atr_floor": false,
+            "prior_rsi_oversold": false,
+            "bullish_recovery": false
+          }
+        }
+      },
+      "last_signal_open": 1792698900,
+      "last_context_open": 1792695600
+    },
+    "XRPTMN": {
+      "regime": "RANGE",
+      "reason": "RANGE, no setup (SCALP_REVERSION: context_uptrend, atr_floor, prior_rsi_oversold)",
+      "features": {
+        "close": 355814.0,
+        "ema20": 355806.6011500595,
+        "ema50": 356783.9541618618,
+        "atr14": 586.8617363016,
+        "atr_pct": 0.0016493498,
+        "rsi14": 48.0785625927,
+        "volume_ratio": 0.0794608017,
+        "prior_high20": 356893.0,
+        "ema20_ctx": 358568.1717970069,
+        "ema50_ctx": 356249.343130643,
+        "ema20_ctx_slope3": -781.27783298,
+        "ret_1": 0.0029766771,
+        "ret_4": -0.0021705722,
+        "ret_16": 0.0022957811,
+        "realized_vol_32": 0.0016931213,
+        "distance_ema20_atr": 0.012607484,
+        "regime": "RANGE",
+        "prior_high_scalp": 356893.0,
+        "setup_checks": {
+          "SCALP_REVERSION": {
+            "context_uptrend": false,
+            "atr_floor": false,
+            "prior_rsi_oversold": false,
+            "bullish_recovery": true
+          }
+        }
+      },
+      "last_signal_open": 1792698900,
+      "last_context_open": 1792695600
+    },
+    "DOGETMN": {
+      "regime": "RANGE",
+      "reason": "RANGE, no setup (SCALP_REVERSION: context_uptrend, atr_floor, prior_rsi_oversold)",
+      "features": {
+        "close": 21435.0,
+        "ema20": 21389.9649761288,
+        "ema50": 21413.2717668293,
+        "atr14": 46.1014867225,
+        "atr_pct": 0.0021507575,
+        "rsi14": 53.9983288181,
+        "volume_ratio": 0.0508742212,
+        "prior_high20": 21468.0,
+        "ema20_ctx": 21500.7589939846,
+        "ema50_ctx": 21452.9203234873,
+        "ema20_ctx_slope3": -29.7709729627,
+        "ret_1": 0.0026193929,
+        "ret_4": 0.0021037868,
+        "ret_16": 0.0032294299,
+        "realized_vol_32": 0.0021190377,
+        "distance_ema20_atr": 0.9768670616,
+        "regime": "RANGE",
+        "prior_high_scalp": 21468.0,
+        "setup_checks": {
+          "SCALP_REVERSION": {
+            "context_uptrend": false,
+            "atr_floor": false,
+            "prior_rsi_oversold": false,
+            "bullish_recovery": true
+          }
+        }
+      },
+      "last_signal_open": 1792698900,
+      "last_context_open": 1792695600
+    },
+    "BNBTMN": {
+      "regime": "TREND_UP",
+      "reason": "TREND_UP, no setup (SCALP_REVERSION: atr_floor, prior_rsi_oversold, bullish_recovery)",
+      "features": {
+        "close": 199023062.0,
+        "ema20": 199142936.48094386,
+        "ema50": 199249253.38236904,
+        "atr14": 424241.6330370721,
+        "atr_pct": 0.0021316205,
+        "rsi14": 47.4446838846,
+        "volume_ratio": 0.0,
+        "prior_high20": 200620419.0,
+        "ema20_ctx": 199319636.6326542,
+        "ema50_ctx": 197566717.58120894,
+        "ema20_ctx_slope3": 61619.8137286603,
+        "ret_1": 0.0,
+        "ret_4": -0.0033770636,
+        "ret_16": 0.0001158894,
+        "realized_vol_32": 0.0029207613,
+        "distance_ema20_atr": -0.2825618035,
+        "regime": "TREND_UP",
+        "prior_high_scalp": 199757554.0,
+        "setup_checks": {
+          "SCALP_REVERSION": {
+            "context_uptrend": true,
+            "atr_floor": false,
+            "prior_rsi_oversold": false,
+            "bullish_recovery": false
+          }
+        }
+      },
+      "last_signal_open": 1792698900,
+      "last_context_open": 1792695600
+    },
+    "ADATMN": {
+      "regime": "TREND_UP",
+      "reason": "TREND_UP, no setup (SCALP_REVERSION: prior_rsi_oversold, bullish_recovery)",
+      "features": {
+        "close": 58116.0,
+        "ema20": 58675.7893032116,
+        "ema50": 58770.9919917699,
+        "atr14": 247.2153392143,
+        "atr_pct": 0.0042538258,
+        "rsi14": 40.465629828,
+        "volume_ratio": 0.0,
+        "prior_high20": 59190.0,
+        "ema20_ctx": 58998.8876127654,
+        "ema50_ctx": 58907.379245366,
+        "ema20_ctx_slope3": 66.5884172821,
+        "ret_1": 0.0,
+        "ret_4": -0.0128246505,
+        "ret_16": -0.0181117794,
+        "realized_vol_32": 0.0114351606,
+        "distance_ema20_atr": -2.2643793261,
+        "regime": "TREND_UP",
+        "prior_high_scalp": 59190.0,
+        "setup_checks": {
+          "SCALP_REVERSION": {
+            "context_uptrend": true,
+            "atr_floor": true,
+            "prior_rsi_oversold": false,
+            "bullish_recovery": false
+          }
+        }
+      },
+      "last_signal_open": 1792698900,
+      "last_context_open": 1792695600
+    },
+    "TRXTMN": {
+      "regime": "TREND_UP",
+      "reason": "TREND_UP, no setup (SCALP_REVERSION: prior_rsi_oversold)",
+      "features": {
+        "close": 89866.0,
+        "ema20": 89604.0674945718,
+        "ema50": 89815.1450919476,
+        "atr14": 413.7231809586,
+        "atr_pct": 0.0046037787,
+        "rsi14": 52.5022309945,
+        "volume_ratio": 0.6656437796,
+        "prior_high20": 90013.0,
+        "ema20_ctx": 89547.0560643264,
+        "ema50_ctx": 88696.5012383545,
+        "ema20_ctx_slope3": 139.4216844275,
+        "ret_1": 0.0075002523,
+        "ret_4": 0.0076471116,
+        "ret_16": 0.0035847898,
+        "realized_vol_32": 0.0038665546,
+        "distance_ema20_atr": 0.6331105374,
+        "regime": "TREND_UP",
+        "prior_high_scalp": 89884.0,
+        "setup_checks": {
+          "SCALP_REVERSION": {
+            "context_uptrend": true,
+            "atr_floor": true,
+            "prior_rsi_oversold": false,
+            "bullish_recovery": true
+          }
+        }
+      },
+      "last_signal_open": 1792698900,
+      "last_context_open": 1792695600
+    }
+  },
+  "SCALP_MOMENTUM": {
+    "BTCTMN": {
+      "regime": "RANGE",
+      "reason": "RANGE, no setup (SCALP_MOMENTUM: context_uptrend, atr_floor, signal_uptrend, breakout_close)",
+      "features": {
+        "close": 22104029602.0,
+        "ema20": 22114154382.283333,
+        "ema50": 22128434821.09876,
+        "atr14": 30277444.113784194,
+        "atr_pct": 0.0013697703,
+        "rsi14": 47.4729093897,
+        "volume_ratio": 2.2792129828,
+        "prior_high20": 22136658023.0,
+        "ema20_ctx": 22149721569.2901,
+        "ema50_ctx": 22022935789.95361,
+        "ema20_ctx_slope3": -10406032.647151947,
+        "ret_1": -0.0014739541,
+        "ret_4": -0.0008063655,
+        "ret_16": 0.002450317,
+        "realized_vol_32": 0.000987284,
+        "distance_ema20_atr": -0.3344000981,
+        "regime": "RANGE",
+        "prior_high_scalp": 22136658023.0,
+        "setup_checks": {
+          "SCALP_MOMENTUM": {
+            "context_uptrend": false,
+            "atr_floor": false,
+            "signal_uptrend": false,
+            "breakout_close": false,
+            "volume_ratio": true,
+            "rsi_ceiling": true,
+            "breakout_extension": true
+          }
+        }
+      },
+      "last_signal_open": 1792698900,
+      "last_context_open": 1792695600
+    },
+    "ETHTMN": {
+      "regime": "RANGE",
+      "reason": "RANGE, no setup (SCALP_MOMENTUM: context_uptrend, atr_floor, signal_uptrend, breakout_close, volume_ratio)",
+      "features": {
+        "close": 647701890.0,
+        "ema20": 648188789.2740141,
+        "ema50": 648886023.5005515,
+        "atr14": 1164125.8898465596,
+        "atr_pct": 0.0017973174,
+        "rsi14": 47.1043804405,
+        "volume_ratio": 0.756703567,
+        "prior_high20": 650006002.0,
+        "ema20_ctx": 651319587.3280568,
+        "ema50_ctx": 648556060.4423633,
+        "ema20_ctx_slope3": -1022249.2418708801,
+        "ret_1": 2.32e-08,
+        "ret_4": -0.0035446477,
+        "ret_16": 0.0030509804,
+        "realized_vol_32": 0.0015177932,
+        "distance_ema20_atr": -0.4182531101,
+        "regime": "RANGE",
+        "prior_high_scalp": 650006002.0,
+        "setup_checks": {
+          "SCALP_MOMENTUM": {
+            "context_uptrend": false,
+            "atr_floor": false,
+            "signal_uptrend": false,
+            "breakout_close": false,
+            "volume_ratio": false,
+            "rsi_ceiling": true,
+            "breakout_extension": true
+          }
+        }
+      },
+      "last_signal_open": 1792698900,
+      "last_context_open": 1792695600
+    },
+    "SOLTMN": {
+      "regime": "RANGE",
+      "reason": "RANGE, no setup (SCALP_MOMENTUM: context_uptrend, atr_floor, signal_uptrend, breakout_close, volume_ratio)",
+      "features": {
+        "close": 28109513.0,
+        "ema20": 28136377.969337184,
+        "ema50": 28209119.764743395,
+        "atr14": 58098.3192606737,
+        "atr_pct": 0.0020668561,
+        "rsi14": 46.5836559156,
+        "volume_ratio": 0.2082800498,
+        "prior_high20": 28268559.0,
+        "ema20_ctx": 28257059.494510416,
+        "ema50_ctx": 28122071.05389057,
+        "ema20_ctx_slope3": -11035.7317122035,
+        "ret_1": 0.0,
+        "ret_4": -7.34217e-05,
+        "ret_16": -0.00145596,
+        "realized_vol_32": 0.0028022568,
+        "distance_ema20_atr": -0.4624052757,
+        "regime": "RANGE",
+        "prior_high_scalp": 28268559.0,
+        "setup_checks": {
+          "SCALP_MOMENTUM": {
+            "context_uptrend": false,
+            "atr_floor": false,
+            "signal_uptrend": false,
+            "breakout_close": false,
+            "volume_ratio": false,
+            "rsi_ceiling": true,
+            "breakout_extension": true
+          }
+        }
+      },
+      "last_signal_open": 1792698900,
+      "last_context_open": 1792695600
+    },
+    "XRPTMN": {
+      "regime": "RANGE",
+      "reason": "RANGE, no setup (SCALP_MOMENTUM: context_uptrend, atr_floor, signal_uptrend, breakout_close, volume_ratio)",
+      "features": {
+        "close": 355814.0,
+        "ema20": 355806.6011500595,
+        "ema50": 356783.9541618618,
+        "atr14": 586.8617363016,
+        "atr_pct": 0.0016493498,
+        "rsi14": 48.0785625927,
+        "volume_ratio": 0.0794608017,
+        "prior_high20": 356893.0,
+        "ema20_ctx": 358568.1717970069,
+        "ema50_ctx": 356249.343130643,
+        "ema20_ctx_slope3": -781.27783298,
+        "ret_1": 0.0029766771,
+        "ret_4": -0.0021705722,
+        "ret_16": 0.0022957811,
+        "realized_vol_32": 0.0016931213,
+        "distance_ema20_atr": 0.012607484,
+        "regime": "RANGE",
+        "prior_high_scalp": 356893.0,
+        "setup_checks": {
+          "SCALP_MOMENTUM": {
+            "context_uptrend": false,
+            "atr_floor": false,
+            "signal_uptrend": false,
+            "breakout_close": false,
+            "volume_ratio": false,
+            "rsi_ceiling": true,
+            "breakout_extension": true
+          }
+        }
+      },
+      "last_signal_open": 1792698900,
+      "last_context_open": 1792695600
+    },
+    "DOGETMN": {
+      "regime": "RANGE",
+      "reason": "RANGE, no setup (SCALP_MOMENTUM: context_uptrend, atr_floor, signal_uptrend, breakout_close, volume_ratio)",
+      "features": {
+        "close": 21435.0,
+        "ema20": 21389.9649761288,
+        "ema50": 21413.2717668293,
+        "atr14": 46.1014867225,
+        "atr_pct": 0.0021507575,
+        "rsi14": 53.9983288181,
+        "volume_ratio": 0.0508742212,
+        "prior_high20": 21468.0,
+        "ema20_ctx": 21500.7589939846,
+        "ema50_ctx": 21452.9203234873,
+        "ema20_ctx_slope3": -29.7709729627,
+        "ret_1": 0.0026193929,
+        "ret_4": 0.0021037868,
+        "ret_16": 0.0032294299,
+        "realized_vol_32": 0.0021190377,
+        "distance_ema20_atr": 0.9768670616,
+        "regime": "RANGE",
+        "prior_high_scalp": 21468.0,
+        "setup_checks": {
+          "SCALP_MOMENTUM": {
+            "context_uptrend": false,
+            "atr_floor": false,
+            "signal_uptrend": false,
+            "breakout_close": false,
+            "volume_ratio": false,
+            "rsi_ceiling": true,
+            "breakout_extension": true
+          }
+        }
+      },
+      "last_signal_open": 1792698900,
+      "last_context_open": 1792695600
+    },
+    "BNBTMN": {
+      "regime": "TREND_UP",
+      "reason": "TREND_UP, no setup (SCALP_MOMENTUM: atr_floor, signal_uptrend, breakout_close, volume_ratio)",
+      "features": {
+        "close": 199023062.0,
+        "ema20": 199142936.48094386,
+        "ema50": 199249253.38236904,
+        "atr14": 424241.6330370721,
+        "atr_pct": 0.0021316205,
+        "rsi14": 47.4446838846,
+        "volume_ratio": 0.0,
+        "prior_high20": 200620419.0,
+        "ema20_ctx": 199319636.6326542,
+        "ema50_ctx": 197566717.58120894,
+        "ema20_ctx_slope3": 61619.8137286603,
+        "ret_1": 0.0,
+        "ret_4": -0.0033770636,
+        "ret_16": 0.0001158894,
+        "realized_vol_32": 0.0029207613,
+        "distance_ema20_atr": -0.2825618035,
+        "regime": "TREND_UP",
+        "prior_high_scalp": 199757554.0,
+        "setup_checks": {
+          "SCALP_MOMENTUM": {
+            "context_uptrend": true,
+            "atr_floor": false,
+            "signal_uptrend": false,
+            "breakout_close": false,
+            "volume_ratio": false,
+            "rsi_ceiling": true,
+            "breakout_extension": true
+          }
+        }
+      },
+      "last_signal_open": 1792698900,
+      "last_context_open": 1792695600
+    },
+    "ADATMN": {
+      "regime": "TREND_UP",
+      "reason": "TREND_UP, no setup (SCALP_MOMENTUM: signal_uptrend, breakout_close, volume_ratio)",
+      "features": {
+        "close": 58116.0,
+        "ema20": 58675.7893032116,
+        "ema50": 58770.9919917699,
+        "atr14": 247.2153392143,
+        "atr_pct": 0.0042538258,
+        "rsi14": 40.465629828,
+        "volume_ratio": 0.0,
+        "prior_high20": 59190.0,
+        "ema20_ctx": 58998.8876127654,
+        "ema50_ctx": 58907.379245366,
+        "ema20_ctx_slope3": 66.5884172821,
+        "ret_1": 0.0,
+        "ret_4": -0.0128246505,
+        "ret_16": -0.0181117794,
+        "realized_vol_32": 0.0114351606,
+        "distance_ema20_atr": -2.2643793261,
+        "regime": "TREND_UP",
+        "prior_high_scalp": 59190.0,
+        "setup_checks": {
+          "SCALP_MOMENTUM": {
+            "context_uptrend": true,
+            "atr_floor": true,
+            "signal_uptrend": false,
+            "breakout_close": false,
+            "volume_ratio": false,
+            "rsi_ceiling": true,
+            "breakout_extension": true
+          }
+        }
+      },
+      "last_signal_open": 1792698900,
+      "last_context_open": 1792695600
+    },
+    "TRXTMN": {
+      "regime": "TREND_UP",
+      "reason": "TREND_UP, no setup (SCALP_MOMENTUM: signal_uptrend, breakout_close, volume_ratio)",
+      "features": {
+        "close": 89866.0,
+        "ema20": 89604.0674945718,
+        "ema50": 89815.1450919476,
+        "atr14": 413.7231809586,
+        "atr_pct": 0.0046037787,
+        "rsi14": 52.5022309945,
+        "volume_ratio": 0.6656437796,
+        "prior_high20": 90013.0,
+        "ema20_ctx": 89547.0560643264,
+        "ema50_ctx": 88696.5012383545,
+        "ema20_ctx_slope3": 139.4216844275,
+        "ret_1": 0.0075002523,
+        "ret_4": 0.0076471116,
+        "ret_16": 0.0035847898,
+        "realized_vol_32": 0.0038665546,
+        "distance_ema20_atr": 0.6331105374,
+        "regime": "TREND_UP",
+        "prior_high_scalp": 89884.0,
+        "setup_checks": {
+          "SCALP_MOMENTUM": {
+            "context_uptrend": true,
+            "atr_floor": true,
+            "signal_uptrend": false,
+            "breakout_close": false,
+            "volume_ratio": false,
+            "rsi_ceiling": true,
+            "breakout_extension": true
+          }
+        }
+      },
+      "last_signal_open": 1792698900,
+      "last_context_open": 1792695600
+    }
+  }
+}

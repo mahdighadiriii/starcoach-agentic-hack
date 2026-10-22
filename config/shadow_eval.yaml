@@ -1,0 +1,58 @@
+# EXPERIMENTAL: real Wallex data, simulated orders only. Strict profiles are unchanged.
+mode: shadow
+experimental_shadow: true
+db_path: state/evaluation/shadow.sqlite
+status_path: state/evaluation/status.json
+evidence_dir: evidence/evaluation
+monitor_port: 8791
+market:
+  candidate_symbols: [BTCTMN, ETHTMN, SOLTMN, XRPTMN, DOGETMN, BNBTMN, ADATMN, TRXTMN]
+  max_spread_bps: "30"
+  max_book_age_seconds: 8
+  max_slippage_bps: "15"
+  max_depth_fraction: "0.25"
+  max_market_data_age_seconds: 60
+  max_account_data_age_seconds: 60
+  signal_seconds: 300
+  context_seconds: 3600
+  warmup_bars: 120
+strategy:
+  enabled_families: [SCALP_MOMENTUM]
+  stop_distance_min_fraction: "0.004"
+  stop_distance_max_fraction: "0.03"
+  scalp_stop_fraction: "0.007"
+  scalp_target_fraction: "0.012"
+  scalp_max_holding_bars: 6
+  scalp_breakout_lookback: 12
+  scalp_volume_ratio: "1.5"
+  scalp_rsi_max: "78"
+  scalp_reversion_rsi: "30"
+  scalp_min_atr_fraction: "0.0025"
+  candidate_ttl_seconds: 60
+  market_filter_symbol: BTCTMN
+  edge_artifact: reports/edge_artifact_scalp.json
+  edge_gate: advisory
+risk:
+  total_credit_tmn: "5000000"
+  authorized_capital_tmn: "1000000"
+  max_order_tmn: "200000"
+  max_positions: 2
+  daily_loss_limit_tmn: "30000"
+  max_drawdown_fraction: "0.05"
+  min_net_target_bps: "30"
+  expected_exit_slippage_bps: "5"
+execution:
+  kill_switch_path: state/evaluation/KILL
+  live_rollout_approved: false
+  entry_cancel_after_seconds: 15
+  exit_poll_seconds: 5
+  exit_limit_slippage_bps: "20"
+  liquidation_slippage_steps_bps: ["20", "40", "80", "160"]
+  read_attempts: 1
+  request_timeout_seconds: 3
+  connect_timeout_seconds: 2
+  taker_fee_fraction: "0.0035"
+ai:
+  mode: baseline
+  deadline_seconds: 20
+  max_calls_per_day: 300

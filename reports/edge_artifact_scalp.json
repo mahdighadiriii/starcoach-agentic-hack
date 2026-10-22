@@ -1,0 +1,22 @@
+{
+  "families": {
+    "SCALP_REVERSION": {
+      "trades": 49,
+      "mean_net_bps": -96.4,
+      "lcb5_net_bps": -107.6,
+      "win_rate": 0.041,
+      "profit_factor": 0.003,
+      "period_utc": [
+        1784905200,
+        1790089200
+      ],
+      "source": "proxy backtest (train split)"
+    }
+  },
+  "created_from": "train split, scalp_reversion_sl0.7_tp1.2",
+  "train": [
+    "2026-07-24",
+    "2026-09-22"
+  ],
+  "data_source": "kucoin_proxy"
+}

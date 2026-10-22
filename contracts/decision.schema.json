@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:wtrader:decision:v2",
+  "title": "Bounded AI selector decision (v2: adds regime, confidence, risk_notes to challenge-pack v1)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "snapshot_id", "action", "candidate_id", "exposure_multiplier", "market_regime", "confidence", "reason_summary", "risk_notes", "evidence_ids", "invalidation"],
+  "properties": {
+    "schema_version": {"const": "2"},
+    "snapshot_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "action": {"enum": ["HOLD", "SELECT"]},
+    "candidate_id": {"type": ["string", "null"], "minLength": 1, "maxLength": 128},
+    "exposure_multiplier": {"enum": ["0", "0.5", "1.0"]},
+    "market_regime": {"enum": ["TRENDING_UP", "TRENDING_DOWN", "RANGING", "VOLATILE", "UNCLEAR"]},
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "reason_summary": {"type": "string", "minLength": 1, "maxLength": 1600},
+    "risk_notes": {"type": "array", "maxItems": 12, "items": {"type": "string", "minLength": 1, "maxLength": 200}},
+    "evidence_ids": {"type": "array", "maxItems": 12, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 200}},
+    "invalidation": {"type": "string", "minLength": 1, "maxLength": 600}
+  },
+  "allOf": [{
+    "if": {"properties": {"action": {"const": "HOLD"}}},
+    "then": {"properties": {"candidate_id": {"type": "null"}, "exposure_multiplier": {"const": "0"}}},
+    "else": {"properties": {"candidate_id": {"type": "string"}, "exposure_multiplier": {"enum": ["0.5", "1.0"]}, "evidence_ids": {"minItems": 1}}}
+  }],
+  "x-enforcement": "wtrader/ai_agent.py validate_decision enforces every rule above plus snapshot, candidate and evidence membership."
+}

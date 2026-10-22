@@ -1,0 +1,77 @@
+# Short-duration spot profile (hypothesis under evaluation, see reports/SHORT_DURATION_COMPARISON.md).
+# Long-only SPOT: no margin, no short selling. 5m decisions, 1h trend context, exits monitored every 5 s.
+# Secrets, account scope, competition clock and the market allowlist come from the environment.
+mode: shadow
+db_path: state/shadow_scalp.sqlite
+live_db_path: state/live.sqlite
+evidence_dir: evidence
+status_path: state/status.json
+competition:
+  initial_capital_tmn: "5000000"      # paper account funding in shadow; the bot trades only the allocation below
+  halt_entries_before_end_minutes: 60
+  begin_liquidation_before_end_minutes: 30
+market:
+  candidate_symbols: [BTCTMN, ETHTMN, SOLTMN, XRPTMN, DOGETMN, BNBTMN, ADATMN, TRXTMN]
+  max_spread_bps: "30"
+  max_book_age_seconds: 8
+  max_slippage_bps: "15"
+  max_depth_fraction: "0.25"
+  max_market_data_age_seconds: 60
+  max_account_data_age_seconds: 60
+  signal_seconds: 300
+  context_seconds: 3600
+  warmup_bars: 120
+strategy:
+  enabled_families: [SCALP_MOMENTUM]
+  stop_distance_min_fraction: "0.004"
+  stop_distance_max_fraction: "0.03"
+  scalp_stop_fraction: "0.007"
+  scalp_target_fraction: "0.012"
+  scalp_max_holding_bars: 6           # 6 x 5 min = 30 min maximum hold
+  scalp_breakout_lookback: 12
+  scalp_volume_ratio: "1.5"
+  scalp_rsi_max: "78"
+  scalp_reversion_rsi: "30"
+  scalp_min_atr_fraction: "0.0025"
+  candidate_ttl_seconds: 60
+  market_filter_symbol: BTCTMN
+  edge_artifact: reports/edge_artifact_scalp.json
+  # strict: no entries unless the family shows a positive validated edge (>= 20 trades, mean net bps > 0).
+  # The current artifact is negative, so this profile places no entries; set `advisory` to observe it in shadow.
+  edge_gate: strict
+risk:
+  total_credit_tmn: "5000000"
+  authorized_capital_tmn: "1000000"
+  max_order_tmn: "200000"
+  max_positions: 2
+  daily_loss_limit_tmn: "30000"
+  daily_loss_fraction: "0.03"
+  max_drawdown_fraction: "0.05"
+  risk_per_trade_fraction: "0.005"
+  max_symbol_notional_fraction: "0.30"
+  max_total_exposure_fraction: "0.60"
+  max_aggregate_stop_risk_fraction: "0.012"
+  min_order_tmn: "100000"
+  min_net_target_bps: "30"
+  expected_exit_slippage_bps: "5"
+  cooldown_bars_after_stop: 4         # 20 min after a stop
+  halt_on_foreign_orders: true
+execution:
+  entry_cancel_after_seconds: 15
+  exit_poll_seconds: 5
+  exit_limit_slippage_bps: "20"
+  liquidation_slippage_steps_bps: ["20", "40", "80", "160"]
+  unknown_reconcile_seconds: 120
+  taker_fee_fraction: "0.0035"        # conservative until GET /v1/account/fee is read on the competition account
+  exchange_reconcile_every_ticks: 6
+  kill_switch_path: state/KILL
+  live_arm_path: state/live_arm.json
+  preflight_path: state/live_preflight.json
+ai:
+  mode: ai
+  model: claude-opus-5-5
+  effort: low
+  prompt_version: selector_v3
+  deadline_seconds: 20
+  max_calls_per_day: 300
+  outage_action: HOLD

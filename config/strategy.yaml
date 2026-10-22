@@ -1,0 +1,63 @@
+# Version-controlled run configuration. Its SHA-256 (with defaults) is recorded in every run manifest.
+# Selection basis: train split only (reports/sweep_trend_train.json); see docs/STRATEGY.md.
+# Secrets, account scope, competition clock and the market allowlist come from the environment.
+mode: shadow
+db_path: state/trader.sqlite
+live_db_path: state/live.sqlite
+evidence_dir: evidence
+status_path: state/status.json
+competition:
+  initial_capital_tmn: "5000000"
+  halt_entries_before_end_minutes: 180
+  begin_liquidation_before_end_minutes: 60
+market:
+  candidate_symbols: [BTCTMN, ETHTMN, SOLTMN, XRPTMN, DOGETMN, BNBTMN, ADATMN, TRXTMN]
+  max_spread_bps: "40"
+  max_book_age_seconds: 8
+  max_slippage_bps: "25"
+  max_depth_fraction: "0.25"
+  signal_seconds: 3600
+  context_seconds: 14400
+  warmup_bars: 120
+strategy:
+  enabled_families: [DONCHIAN_TREND]
+  atr_stop_multiplier: "3.0"
+  trail_atr_multiplier: "4.0"
+  trend_target_r: "8"
+  trend_max_holding_bars: 72
+  stop_distance_min_fraction: "0.008"
+  stop_distance_max_fraction: "0.08"
+  market_filter_symbol: BTCTMN
+  edge_artifact: reports/edge_artifact.json
+risk:
+  risk_per_trade_fraction: "0.005"
+  max_symbol_notional_fraction: "0.30"
+  max_total_exposure_fraction: "0.60"
+  max_aggregate_stop_risk_fraction: "0.012"
+  max_positions: 2
+  daily_loss_fraction: "0.03"
+  max_drawdown_fraction: "0.04"
+  min_order_tmn: "100000"
+  cooldown_bars_after_stop: 4
+  # strict initial allocation (enforced in the risk gate and again in the executor)
+  total_credit_tmn: "5000000"
+  authorized_capital_tmn: "1000000"
+  max_order_tmn: "200000"
+  daily_loss_limit_tmn: "30000"
+  min_net_target_bps: "30"
+  halt_on_foreign_orders: true
+execution:
+  entry_cancel_after_seconds: 20
+  exit_poll_seconds: 5
+  exit_limit_slippage_bps: "30"
+  liquidation_slippage_steps_bps: ["30", "60", "120", "250"]
+  unknown_reconcile_seconds: 120
+  taker_fee_fraction: "0.0035"
+ai:
+  mode: ai
+  model: claude-opus-5-5
+  effort: low
+  prompt_version: selector_v3
+  deadline_seconds: 25
+  max_calls_per_day: 160
+  outage_action: HOLD

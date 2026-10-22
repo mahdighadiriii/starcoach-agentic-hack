@@ -1,0 +1,448 @@
+[
+ {
+  "params": {
+   "sig_s": 3600,
+   "ctx_s": 14400,
+   "atr_stop": 3.0,
+   "trail_atr": 4.0,
+   "market_filter": true
+  },
+  "net_return_pct": -12.028,
+  "max_drawdown_pct": 12.264,
+  "trades": 69,
+  "win_rate": 0.246,
+  "profit_factor": 0.229,
+  "avg_net_bps_per_trade": -105.0,
+  "episode_return_pct": {
+   "mean": -0.241,
+   "median": 0.0,
+   "worst": -1.421,
+   "best": 1.037,
+   "positive_share": 0.038
+  },
+  "exit_reasons": {
+   "LIQUIDATION": 21,
+   "TRAIL_STOP": 15,
+   "STOP": 33
+  }
+ },
+ {
+  "params": {
+   "sig_s": 3600,
+   "ctx_s": 14400,
+   "atr_stop": 3.0,
+   "trail_atr": 4.0,
+   "market_filter": false
+  },
+  "net_return_pct": -14.987,
+  "max_drawdown_pct": 15.732,
+  "trades": 101,
+  "win_rate": 0.257,
+  "profit_factor": 0.32,
+  "avg_net_bps_per_trade": -81.0,
+  "episode_return_pct": {
+   "mean": -0.305,
+   "median": -0.337,
+   "worst": -2.042,
+   "best": 1.763,
+   "positive_share": 0.151
+  },
+  "exit_reasons": {
+   "LIQUIDATION": 32,
+   "TRAIL_STOP": 19,
+   "STOP": 50
+  }
+ },
+ {
+  "params": {
+   "sig_s": 3600,
+   "ctx_s": 14400,
+   "atr_stop": 2.0,
+   "trail_atr": 4.0,
+   "market_filter": true
+  },
+  "net_return_pct": -15.405,
+  "max_drawdown_pct": 16.52,
+  "trades": 72,
+  "win_rate": 0.181,
+  "profit_factor": 0.279,
+  "avg_net_bps_per_trade": -107.2,
+  "episode_return_pct": {
+   "mean": -0.312,
+   "median": 0.0,
+   "worst": -2.415,
+   "best": 2.503,
+   "positive_share": 0.057
+  },
+  "exit_reasons": {
+   "STOP": 46,
+   "TRAIL_STOP": 14,
+   "TARGET": 1,
+   "LIQUIDATION": 11
+  }
+ },
+ {
+  "params": {
+   "sig_s": 3600,
+   "ctx_s": 14400,
+   "atr_stop": 3.0,
+   "trail_atr": 2.5,
+   "market_filter": true
+  },
+  "net_return_pct": -16.895,
+  "max_drawdown_pct": 17.018,
+  "trades": 95,
+  "win_rate": 0.147,
+  "profit_factor": 0.18,
+  "avg_net_bps_per_trade": -111.4,
+  "episode_return_pct": {
+   "mean": -0.347,
+   "median": 0.0,
+   "worst": -1.601,
+   "best": 0.234,
+   "positive_share": 0.019
+  },
+  "exit_reasons": {
+   "STOP": 59,
+   "TRAIL_STOP": 25,
+   "LIQUIDATION": 11
+  }
+ },
+ {
+  "params": {
+   "sig_s": 3600,
+   "ctx_s": 14400,
+   "atr_stop": 2.0,
+   "trail_atr": 4.0,
+   "market_filter": false
+  },
+  "net_return_pct": -18.387,
+  "max_drawdown_pct": 19.89,
+  "trades": 102,
+  "win_rate": 0.206,
+  "profit_factor": 0.346,
+  "avg_net_bps_per_trade": -87.4,
+  "episode_return_pct": {
+   "mean": -0.381,
+   "median": -0.476,
+   "worst": -2.415,
+   "best": 2.503,
+   "positive_share": 0.132
+  },
+  "exit_reasons": {
+   "STOP": 62,
+   "LIQUIDATION": 22,
+   "TRAIL_STOP": 17,
+   "TARGET": 1
+  }
+ },
+ {
+  "params": {
+   "sig_s": 3600,
+   "ctx_s": 14400,
+   "atr_stop": 2.0,
+   "trail_atr": 2.5,
+   "market_filter": true
+  },
+  "net_return_pct": -18.673,
+  "max_drawdown_pct": 18.835,
+  "trades": 84,
+  "win_rate": 0.167,
+  "profit_factor": 0.172,
+  "avg_net_bps_per_trade": -116.4,
+  "episode_return_pct": {
+   "mean": -0.388,
+   "median": 0.0,
+   "worst": -2.023,
+   "best": 0.316,
+   "positive_share": 0.019
+  },
+  "exit_reasons": {
+   "STOP": 57,
+   "TRAIL_STOP": 19,
+   "LIQUIDATION": 8
+  }
+ },
+ {
+  "params": {
+   "sig_s": 3600,
+   "ctx_s": 14400,
+   "atr_stop": 3.0,
+   "trail_atr": 2.5,
+   "market_filter": false
+  },
+  "net_return_pct": -20.402,
+  "max_drawdown_pct": 20.652,
+  "trades": 135,
+  "win_rate": 0.17,
+  "profit_factor": 0.24,
+  "avg_net_bps_per_trade": -89.9,
+  "episode_return_pct": {
+   "mean": -0.429,
+   "median": -0.283,
+   "worst": -1.685,
+   "best": 0.758,
+   "positive_share": 0.113
+  },
+  "exit_reasons": {
+   "STOP": 82,
+   "TRAIL_STOP": 36,
+   "LIQUIDATION": 17
+  }
+ },
+ {
+  "params": {
+   "sig_s": 3600,
+   "ctx_s": 14400,
+   "atr_stop": 2.0,
+   "trail_atr": 2.5,
+   "market_filter": false
+  },
+  "net_return_pct": -20.578,
+  "max_drawdown_pct": 20.781,
+  "trades": 115,
+  "win_rate": 0.209,
+  "profit_factor": 0.269,
+  "avg_net_bps_per_trade": -92.1,
+  "episode_return_pct": {
+   "mean": -0.434,
+   "median": -0.369,
+   "worst": -2.023,
+   "best": 0.984,
+   "positive_share": 0.094
+  },
+  "exit_reasons": {
+   "STOP": 74,
+   "TRAIL_STOP": 29,
+   "LIQUIDATION": 12
+  }
+ },
+ {
+  "params": {
+   "sig_s": 900,
+   "ctx_s": 3600,
+   "atr_stop": 2.0,
+   "trail_atr": 4.0,
+   "market_filter": true
+  },
+  "net_return_pct": -32.265,
+  "max_drawdown_pct": 33.081,
+  "trades": 151,
+  "win_rate": 0.185,
+  "profit_factor": 0.251,
+  "avg_net_bps_per_trade": -105.1,
+  "episode_return_pct": {
+   "mean": -0.728,
+   "median": -0.923,
+   "worst": -2.776,
+   "best": 1.608,
+   "positive_share": 0.075
+  },
+  "exit_reasons": {
+   "STOP": 114,
+   "TRAIL_STOP": 26,
+   "LIQUIDATION": 7,
+   "TIME_EXIT": 3,
+   "TARGET": 1
+  }
+ },
+ {
+  "params": {
+   "sig_s": 900,
+   "ctx_s": 3600,
+   "atr_stop": 3.0,
+   "trail_atr": 4.0,
+   "market_filter": true
+  },
+  "net_return_pct": -35.142,
+  "max_drawdown_pct": 35.552,
+  "trades": 192,
+  "win_rate": 0.203,
+  "profit_factor": 0.228,
+  "avg_net_bps_per_trade": -101.4,
+  "episode_return_pct": {
+   "mean": -0.809,
+   "median": -0.787,
+   "worst": -2.633,
+   "best": 2.662,
+   "positive_share": 0.057
+  },
+  "exit_reasons": {
+   "STOP": 126,
+   "TRAIL_STOP": 46,
+   "TIME_EXIT": 12,
+   "LIQUIDATION": 8
+  }
+ },
+ {
+  "params": {
+   "sig_s": 900,
+   "ctx_s": 3600,
+   "atr_stop": 2.0,
+   "trail_atr": 4.0,
+   "market_filter": false
+  },
+  "net_return_pct": -36.694,
+  "max_drawdown_pct": 38.246,
+  "trades": 199,
+  "win_rate": 0.231,
+  "profit_factor": 0.297,
+  "avg_net_bps_per_trade": -94.0,
+  "episode_return_pct": {
+   "mean": -0.869,
+   "median": -0.861,
+   "worst": -3.065,
+   "best": 1.371,
+   "positive_share": 0.113
+  },
+  "exit_reasons": {
+   "STOP": 144,
+   "TRAIL_STOP": 37,
+   "LIQUIDATION": 11,
+   "TIME_EXIT": 5,
+   "TARGET": 2
+  }
+ },
+ {
+  "params": {
+   "sig_s": 900,
+   "ctx_s": 3600,
+   "atr_stop": 2.0,
+   "trail_atr": 2.5,
+   "market_filter": true
+  },
+  "net_return_pct": -38.62,
+  "max_drawdown_pct": 38.976,
+  "trades": 186,
+  "win_rate": 0.134,
+  "profit_factor": 0.145,
+  "avg_net_bps_per_trade": -106.7,
+  "episode_return_pct": {
+   "mean": -0.911,
+   "median": -0.826,
+   "worst": -3.642,
+   "best": 0.579,
+   "positive_share": 0.057
+  },
+  "exit_reasons": {
+   "STOP": 134,
+   "TRAIL_STOP": 49,
+   "LIQUIDATION": 3
+  }
+ },
+ {
+  "params": {
+   "sig_s": 900,
+   "ctx_s": 3600,
+   "atr_stop": 3.0,
+   "trail_atr": 4.0,
+   "market_filter": false
+  },
+  "net_return_pct": -39.966,
+  "max_drawdown_pct": 40.646,
+  "trades": 260,
+  "win_rate": 0.231,
+  "profit_factor": 0.285,
+  "avg_net_bps_per_trade": -87.4,
+  "episode_return_pct": {
+   "mean": -0.965,
+   "median": -0.948,
+   "worst": -2.923,
+   "best": 2.26,
+   "positive_share": 0.151
+  },
+  "exit_reasons": {
+   "STOP": 162,
+   "TRAIL_STOP": 67,
+   "TIME_EXIT": 14,
+   "LIQUIDATION": 16,
+   "TARGET": 1
+  }
+ },
+ {
+  "params": {
+   "sig_s": 900,
+   "ctx_s": 3600,
+   "atr_stop": 3.0,
+   "trail_atr": 2.5,
+   "market_filter": true
+  },
+  "net_return_pct": -44.379,
+  "max_drawdown_pct": 44.379,
+  "trades": 259,
+  "win_rate": 0.12,
+  "profit_factor": 0.112,
+  "avg_net_bps_per_trade": -102.8,
+  "episode_return_pct": {
+   "mean": -1.096,
+   "median": -1.056,
+   "worst": -3.68,
+   "best": 0.187,
+   "positive_share": 0.038
+  },
+  "exit_reasons": {
+   "STOP": 181,
+   "TRAIL_STOP": 75,
+   "LIQUIDATION": 2,
+   "TIME_EXIT": 1
+  }
+ },
+ {
+  "params": {
+   "sig_s": 900,
+   "ctx_s": 3600,
+   "atr_stop": 2.0,
+   "trail_atr": 2.5,
+   "market_filter": false
+  },
+  "net_return_pct": -45.448,
+  "max_drawdown_pct": 45.756,
+  "trades": 247,
+  "win_rate": 0.15,
+  "profit_factor": 0.176,
+  "avg_net_bps_per_trade": -101.3,
+  "episode_return_pct": {
+   "mean": -1.135,
+   "median": -0.952,
+   "worst": -4.08,
+   "best": 0.85,
+   "positive_share": 0.038
+  },
+  "exit_reasons": {
+   "STOP": 175,
+   "TRAIL_STOP": 66,
+   "LIQUIDATION": 4,
+   "BREAKER": 1,
+   "TARGET": 1
+  }
+ },
+ {
+  "params": {
+   "sig_s": 900,
+   "ctx_s": 3600,
+   "atr_stop": 3.0,
+   "trail_atr": 2.5,
+   "market_filter": false
+  },
+  "net_return_pct": -52.902,
+  "max_drawdown_pct": 53.109,
+  "trades": 355,
+  "win_rate": 0.13,
+  "profit_factor": 0.136,
+  "avg_net_bps_per_trade": -96.9,
+  "episode_return_pct": {
+   "mean": -1.408,
+   "median": -1.478,
+   "worst": -4.221,
+   "best": 0.187,
+   "positive_share": 0.057
+  },
+  "exit_reasons": {
+   "STOP": 238,
+   "TRAIL_STOP": 108,
+   "LIQUIDATION": 5,
+   "BREAKER": 3,
+   "TIME_EXIT": 1
+  }
+ }
+]
