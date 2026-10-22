@@ -1,0 +1,682 @@
+{
+  "generated_at": "2026-10-22T16:02:09.524771+00:00",
+  "data_source": "kucoin_proxy",
+  "proxy": true,
+  "symbols": [
+    "BTCUSDT",
+    "ETHUSDT",
+    "SOLUSDT",
+    "XRPUSDT",
+    "DOGEUSDT",
+    "BNBUSDT",
+    "ADAUSDT",
+    "TRXUSDT"
+  ],
+  "train": [
+    "2026-07-24",
+    "2026-09-22"
+  ],
+  "test": [
+    "2026-09-22",
+    "2026-10-22"
+  ],
+  "allocation_tmn": "1000000",
+  "max_order_tmn": "200000",
+  "cost_model": {
+    "half_spread_bps": "8",
+    "slippage_bps": "5",
+    "entry_latency_s_scalp": 60
+  },
+  "train_results": {
+    "baseline_donchian_1h": {
+      "label": "baseline_train",
+      "net_pnl_tmn": 36495,
+      "net_return_pct": 3.65,
+      "max_drawdown_pct": 2.311,
+      "trades": 28,
+      "win_rate": 0.429,
+      "profit_factor": 2.02,
+      "avg_pnl_per_trade_tmn": 1303,
+      "avg_net_bps_per_trade": 85.2,
+      "fees_tmn": 35497,
+      "exit_reasons": {
+        "LIQUIDATION": 4,
+        "STOP": 10,
+        "TRAIL_STOP": 14
+      },
+      "by_family": {
+        "DONCHIAN_TREND": {
+          "trades": 28,
+          "net_pnl_tmn": 36495,
+          "mean_net_bps": 85.2,
+          "win_rate": 0.429
+        }
+      },
+      "episodes": 19,
+      "episode_return_pct": {
+        "mean": 0.159,
+        "median": 0.0,
+        "worst": -0.674,
+        "best": 1.861,
+        "positive_share": 0.316
+      },
+      "decision_points": 0,
+      "selected": 0,
+      "held": 0,
+      "selector_sources": {},
+      "differs_from_baseline": 0,
+      "holding_minutes": {
+        "median": 1140.0,
+        "mean": 1062.9,
+        "max": 2280.0
+      },
+      "trades_per_day": 0.47
+    },
+    "scalp_momentum_sl0.7_tp1.2": {
+      "label": "scalp_momentum_sl0.7_tp1.2",
+      "net_pnl_tmn": -288823,
+      "net_return_pct": -28.882,
+      "max_drawdown_pct": 28.882,
+      "trades": 164,
+      "win_rate": 0.165,
+      "profit_factor": 0.075,
+      "avg_pnl_per_trade_tmn": -1761,
+      "avg_net_bps_per_trade": -88.4,
+      "fees_tmn": 227961,
+      "exit_reasons": {
+        "TIME_EXIT": 94,
+        "STOP": 44,
+        "TARGET": 23,
+        "BREAKER": 3
+      },
+      "by_family": {
+        "SCALP_MOMENTUM": {
+          "trades": 164,
+          "net_pnl_tmn": -288823,
+          "mean_net_bps": -88.4,
+          "win_rate": 0.165
+        }
+      },
+      "episodes": 19,
+      "episode_return_pct": {
+        "mean": -1.494,
+        "median": -0.649,
+        "worst": -5.215,
+        "best": 0.0,
+        "positive_share": 0.0
+      },
+      "decision_points": 0,
+      "selected": 0,
+      "held": 0,
+      "selector_sources": {},
+      "differs_from_baseline": 0,
+      "holding_minutes": {
+        "median": 30.0,
+        "mean": 23.6,
+        "max": 30.0
+      },
+      "trades_per_day": 2.73
+    },
+    "scalp_reversion_sl0.7_tp1.2": {
+      "label": "scalp_reversion_sl0.7_tp1.2",
+      "net_pnl_tmn": -94030,
+      "net_return_pct": -9.403,
+      "max_drawdown_pct": 9.46,
+      "trades": 49,
+      "win_rate": 0.041,
+      "profit_factor": 0.003,
+      "avg_pnl_per_trade_tmn": -1919,
+      "avg_net_bps_per_trade": -96.4,
+      "fees_tmn": 68092,
+      "exit_reasons": {
+        "TIME_EXIT": 38,
+        "STOP": 11
+      },
+      "by_family": {
+        "SCALP_REVERSION": {
+          "trades": 49,
+          "net_pnl_tmn": -94030,
+          "mean_net_bps": -96.4,
+          "win_rate": 0.041
+        }
+      },
+      "episodes": 19,
+      "episode_return_pct": {
+        "mean": -0.441,
+        "median": -0.405,
+        "worst": -1.328,
+        "best": 0.0,
+        "positive_share": 0.0
+      },
+      "decision_points": 0,
+      "selected": 0,
+      "held": 0,
+      "selector_sources": {},
+      "differs_from_baseline": 0,
+      "holding_minutes": {
+        "median": 30.0,
+        "mean": 26.1,
+        "max": 30.0
+      },
+      "trades_per_day": 0.82
+    },
+    "scalp_both_sl0.7_tp1.2": {
+      "label": "scalp_both_sl0.7_tp1.2",
+      "net_pnl_tmn": -341915,
+      "net_return_pct": -34.192,
+      "max_drawdown_pct": 34.192,
+      "trades": 186,
+      "win_rate": 0.129,
+      "profit_factor": 0.055,
+      "avg_pnl_per_trade_tmn": -1838,
+      "avg_net_bps_per_trade": -92.3,
+      "fees_tmn": 258485,
+      "exit_reasons": {
+        "TIME_EXIT": 114,
+        "STOP": 48,
+        "TARGET": 20,
+        "BREAKER": 4
+      },
+      "by_family": {
+        "SCALP_MOMENTUM": {
+          "trades": 147,
+          "net_pnl_tmn": -264072,
+          "mean_net_bps": -90.2,
+          "win_rate": 0.156
+        },
+        "SCALP_REVERSION": {
+          "trades": 39,
+          "net_pnl_tmn": -77843,
+          "mean_net_bps": -100.2,
+          "win_rate": 0.026
+        }
+      },
+      "episodes": 19,
+      "episode_return_pct": {
+        "mean": -1.883,
+        "median": -1.644,
+        "worst": -5.085,
+        "best": 0.0,
+        "positive_share": 0.0
+      },
+      "decision_points": 0,
+      "selected": 0,
+      "held": 0,
+      "selector_sources": {},
+      "differs_from_baseline": 0,
+      "holding_minutes": {
+        "median": 30.0,
+        "mean": 24.2,
+        "max": 30.0
+      },
+      "trades_per_day": 3.1
+    },
+    "scalp_momentum_sl0.5_tp0.9": {
+      "label": "scalp_momentum_sl0.5_tp0.9",
+      "net_pnl_tmn": 0,
+      "net_return_pct": 0.0,
+      "max_drawdown_pct": 0.0,
+      "trades": 0,
+      "win_rate": null,
+      "profit_factor": null,
+      "avg_pnl_per_trade_tmn": null,
+      "avg_net_bps_per_trade": null,
+      "fees_tmn": 0,
+      "exit_reasons": {},
+      "by_family": {},
+      "episodes": 19,
+      "episode_return_pct": {
+        "mean": 0.0,
+        "median": 0.0,
+        "worst": 0.0,
+        "best": 0.0,
+        "positive_share": 0.0
+      },
+      "decision_points": 0,
+      "selected": 0,
+      "held": 0,
+      "selector_sources": {},
+      "differs_from_baseline": 0,
+      "holding_minutes": {},
+      "trades_per_day": 0.0
+    },
+    "scalp_momentum_sl1.0_tp1.8": {
+      "label": "scalp_momentum_sl1.0_tp1.8",
+      "net_pnl_tmn": -295085,
+      "net_return_pct": -29.508,
+      "max_drawdown_pct": 29.508,
+      "trades": 152,
+      "win_rate": 0.099,
+      "profit_factor": 0.059,
+      "avg_pnl_per_trade_tmn": -1941,
+      "avg_net_bps_per_trade": -98.3,
+      "fees_tmn": 209215,
+      "exit_reasons": {
+        "TIME_EXIT": 120,
+        "STOP": 22,
+        "TARGET": 6,
+        "BREAKER": 4
+      },
+      "by_family": {
+        "SCALP_MOMENTUM": {
+          "trades": 152,
+          "net_pnl_tmn": -295085,
+          "mean_net_bps": -98.3,
+          "win_rate": 0.099
+        }
+      },
+      "episodes": 19,
+      "episode_return_pct": {
+        "mean": -1.532,
+        "median": -0.648,
+        "worst": -5.142,
+        "best": 0.0,
+        "positive_share": 0.0
+      },
+      "decision_points": 0,
+      "selected": 0,
+      "held": 0,
+      "selector_sources": {},
+      "differs_from_baseline": 0,
+      "holding_minutes": {
+        "median": 30.0,
+        "mean": 27.2,
+        "max": 30.0
+      },
+      "trades_per_day": 2.53
+    },
+    "scalp_momentum_no_cost_gate": {
+      "label": "scalp_momentum_no_cost_gate",
+      "net_pnl_tmn": -288823,
+      "net_return_pct": -28.882,
+      "max_drawdown_pct": 28.882,
+      "trades": 164,
+      "win_rate": 0.165,
+      "profit_factor": 0.075,
+      "avg_pnl_per_trade_tmn": -1761,
+      "avg_net_bps_per_trade": -88.4,
+      "fees_tmn": 227961,
+      "exit_reasons": {
+        "TIME_EXIT": 94,
+        "STOP": 44,
+        "TARGET": 23,
+        "BREAKER": 3
+      },
+      "by_family": {
+        "SCALP_MOMENTUM": {
+          "trades": 164,
+          "net_pnl_tmn": -288823,
+          "mean_net_bps": -88.4,
+          "win_rate": 0.165
+        }
+      },
+      "episodes": 19,
+      "episode_return_pct": {
+        "mean": -1.494,
+        "median": -0.649,
+        "worst": -5.215,
+        "best": 0.0,
+        "positive_share": 0.0
+      },
+      "decision_points": 0,
+      "selected": 0,
+      "held": 0,
+      "selector_sources": {},
+      "differs_from_baseline": 0,
+      "holding_minutes": {
+        "median": 30.0,
+        "mean": 23.6,
+        "max": 30.0
+      },
+      "trades_per_day": 2.73
+    }
+  },
+  "test_results": {
+    "baseline_donchian_1h": {
+      "label": "baseline_test",
+      "net_pnl_tmn": -25549,
+      "net_return_pct": -2.555,
+      "max_drawdown_pct": 2.555,
+      "trades": 10,
+      "win_rate": 0.2,
+      "profit_factor": 0.051,
+      "avg_pnl_per_trade_tmn": -2555,
+      "avg_net_bps_per_trade": -139.1,
+      "fees_tmn": 13075,
+      "exit_reasons": {
+        "STOP": 7,
+        "LIQUIDATION": 2,
+        "TRAIL_STOP": 1
+      },
+      "by_family": {
+        "DONCHIAN_TREND": {
+          "trades": 10,
+          "net_pnl_tmn": -25549,
+          "mean_net_bps": -139.1,
+          "win_rate": 0.2
+        }
+      },
+      "episodes": 10,
+      "episode_return_pct": {
+        "mean": -0.258,
+        "median": 0.0,
+        "worst": -1.105,
+        "best": 0.0,
+        "positive_share": 0.0
+      },
+      "decision_points": 0,
+      "selected": 0,
+      "held": 0,
+      "selector_sources": {},
+      "differs_from_baseline": 0,
+      "holding_minutes": {
+        "median": 420.0,
+        "mean": 618.0,
+        "max": 1500.0
+      },
+      "trades_per_day": 0.33
+    },
+    "scalp_reversion_sl0.7_tp1.2": {
+      "label": "scalp_reversion_sl0.7_tp1.2",
+      "net_pnl_tmn": -42660,
+      "net_return_pct": -4.266,
+      "max_drawdown_pct": 4.283,
+      "trades": 22,
+      "win_rate": 0.045,
+      "profit_factor": 0.004,
+      "avg_pnl_per_trade_tmn": -1939,
+      "avg_net_bps_per_trade": -97.4,
+      "fees_tmn": 30560,
+      "exit_reasons": {
+        "TIME_EXIT": 19,
+        "STOP": 3
+      },
+      "by_family": {
+        "SCALP_REVERSION": {
+          "trades": 22,
+          "net_pnl_tmn": -42660,
+          "mean_net_bps": -97.4,
+          "win_rate": 0.045
+        }
+      },
+      "episodes": 10,
+      "episode_return_pct": {
+        "mean": -0.434,
+        "median": -0.178,
+        "worst": -1.204,
+        "best": 0.0,
+        "positive_share": 0.0
+      },
+      "decision_points": 0,
+      "selected": 0,
+      "held": 0,
+      "selector_sources": {},
+      "differs_from_baseline": 0,
+      "holding_minutes": {
+        "median": 30.0,
+        "mean": 27.2,
+        "max": 30.0
+      },
+      "trades_per_day": 0.73
+    },
+    "scalp_momentum_sl0.7_tp1.2": {
+      "label": "scalp_momentum_sl0.7_tp1.2",
+      "net_pnl_tmn": -58853,
+      "net_return_pct": -5.885,
+      "max_drawdown_pct": 5.885,
+      "trades": 33,
+      "win_rate": 0.121,
+      "profit_factor": 0.076,
+      "avg_pnl_per_trade_tmn": -1783,
+      "avg_net_bps_per_trade": -89.6,
+      "fees_tmn": 45874,
+      "exit_reasons": {
+        "STOP": 6,
+        "TIME_EXIT": 25,
+        "TARGET": 2
+      },
+      "by_family": {
+        "SCALP_MOMENTUM": {
+          "trades": 33,
+          "net_pnl_tmn": -58853,
+          "mean_net_bps": -89.6,
+          "win_rate": 0.121
+        }
+      },
+      "episodes": 10,
+      "episode_return_pct": {
+        "mean": -0.601,
+        "median": 0.0,
+        "worst": -2.269,
+        "best": 0.0,
+        "positive_share": 0.0
+      },
+      "decision_points": 0,
+      "selected": 0,
+      "held": 0,
+      "selector_sources": {},
+      "differs_from_baseline": 0,
+      "holding_minutes": {
+        "median": 30.0,
+        "mean": 26.5,
+        "max": 30.0
+      },
+      "trades_per_day": 1.1
+    },
+    "scalp_momentum_no_cost_gate": {
+      "label": "no_gate",
+      "net_pnl_tmn": -58853,
+      "net_return_pct": -5.885,
+      "max_drawdown_pct": 5.885,
+      "trades": 33,
+      "win_rate": 0.121,
+      "profit_factor": 0.076,
+      "avg_pnl_per_trade_tmn": -1783,
+      "avg_net_bps_per_trade": -89.6,
+      "fees_tmn": 45874,
+      "exit_reasons": {
+        "STOP": 6,
+        "TIME_EXIT": 25,
+        "TARGET": 2
+      },
+      "by_family": {
+        "SCALP_MOMENTUM": {
+          "trades": 33,
+          "net_pnl_tmn": -58853,
+          "mean_net_bps": -89.6,
+          "win_rate": 0.121
+        }
+      },
+      "episodes": 10,
+      "episode_return_pct": {
+        "mean": -0.601,
+        "median": 0.0,
+        "worst": -2.269,
+        "best": 0.0,
+        "positive_share": 0.0
+      },
+      "decision_points": 0,
+      "selected": 0,
+      "held": 0,
+      "selector_sources": {},
+      "differs_from_baseline": 0,
+      "holding_minutes": {
+        "median": 30.0,
+        "mean": 26.5,
+        "max": 30.0
+      },
+      "trades_per_day": 1.1
+    }
+  },
+  "fee_sensitivity_test": {
+    "0.0035": {
+      "baseline_donchian_1h": {
+        "net_return_pct": -2.555,
+        "net_pnl_tmn": -25549,
+        "max_drawdown_pct": 2.555,
+        "trades": 10,
+        "win_rate": 0.2,
+        "profit_factor": 0.051,
+        "avg_net_bps_per_trade": -139.1,
+        "fees_tmn": 13075,
+        "trades_per_day": 0.33
+      },
+      "scalp_reversion_sl0.7_tp1.2": {
+        "net_return_pct": -4.266,
+        "net_pnl_tmn": -42660,
+        "max_drawdown_pct": 4.283,
+        "trades": 22,
+        "win_rate": 0.045,
+        "profit_factor": 0.004,
+        "avg_net_bps_per_trade": -97.4,
+        "fees_tmn": 30560,
+        "trades_per_day": 0.73
+      }
+    },
+    "0.0025": {
+      "baseline_donchian_1h": {
+        "net_return_pct": -2.275,
+        "net_pnl_tmn": -22752,
+        "max_drawdown_pct": 2.275,
+        "trades": 10,
+        "win_rate": 0.2,
+        "profit_factor": 0.088,
+        "avg_net_bps_per_trade": -119.3,
+        "fees_tmn": 9600,
+        "trades_per_day": 0.33
+      },
+      "scalp_reversion_sl0.7_tp1.2": {
+        "net_return_pct": -3.399,
+        "net_pnl_tmn": -33985,
+        "max_drawdown_pct": 3.454,
+        "trades": 22,
+        "win_rate": 0.045,
+        "profit_factor": 0.017,
+        "avg_net_bps_per_trade": -77.5,
+        "fees_tmn": 21861,
+        "trades_per_day": 0.73
+      }
+    },
+    "0.0020": {
+      "baseline_donchian_1h": {
+        "net_return_pct": -2.104,
+        "net_pnl_tmn": -21041,
+        "max_drawdown_pct": 2.104,
+        "trades": 10,
+        "win_rate": 0.2,
+        "profit_factor": 0.109,
+        "avg_net_bps_per_trade": -109.4,
+        "fees_tmn": 7734,
+        "trades_per_day": 0.33
+      },
+      "scalp_reversion_sl0.7_tp1.2": {
+        "net_return_pct": -2.964,
+        "net_pnl_tmn": -29638,
+        "max_drawdown_pct": 3.039,
+        "trades": 22,
+        "win_rate": 0.045,
+        "profit_factor": 0.026,
+        "avg_net_bps_per_trade": -67.6,
+        "fees_tmn": 17502,
+        "trades_per_day": 0.73
+      }
+    },
+    "0.0010": {
+      "baseline_donchian_1h": {
+        "net_return_pct": -2.238,
+        "net_pnl_tmn": -22378,
+        "max_drawdown_pct": 2.238,
+        "trades": 11,
+        "win_rate": 0.182,
+        "profit_factor": 0.132,
+        "avg_net_bps_per_trade": -125.2,
+        "fees_tmn": 4121,
+        "trades_per_day": 0.37
+      },
+      "scalp_reversion_sl0.7_tp1.2": {
+        "net_return_pct": -2.092,
+        "net_pnl_tmn": -20924,
+        "max_drawdown_pct": 2.208,
+        "trades": 22,
+        "win_rate": 0.091,
+        "profit_factor": 0.057,
+        "avg_net_bps_per_trade": -47.7,
+        "fees_tmn": 8764,
+        "trades_per_day": 0.73
+      }
+    },
+    "0": {
+      "baseline_donchian_1h": {
+        "net_return_pct": -1.875,
+        "net_pnl_tmn": -18746,
+        "max_drawdown_pct": 1.875,
+        "trades": 11,
+        "win_rate": 0.273,
+        "profit_factor": 0.185,
+        "avg_net_bps_per_trade": -105.4,
+        "fees_tmn": 0,
+        "trades_per_day": 0.37
+      },
+      "scalp_reversion_sl0.7_tp1.2": {
+        "net_return_pct": -1.218,
+        "net_pnl_tmn": -12185,
+        "max_drawdown_pct": 1.374,
+        "trades": 22,
+        "win_rate": 0.273,
+        "profit_factor": 0.188,
+        "avg_net_bps_per_trade": -27.7,
+        "fees_tmn": 0,
+        "trades_per_day": 0.73
+      }
+    }
+  },
+  "spread_sensitivity_test": {
+    "4": {
+      "net_return_pct": -3.908,
+      "net_pnl_tmn": -39085,
+      "max_drawdown_pct": 3.951,
+      "trades": 22,
+      "win_rate": 0.045,
+      "profit_factor": 0.011,
+      "avg_net_bps_per_trade": -89.2,
+      "fees_tmn": 30572,
+      "trades_per_day": 0.73
+    },
+    "8": {
+      "net_return_pct": -4.266,
+      "net_pnl_tmn": -42660,
+      "max_drawdown_pct": 4.283,
+      "trades": 22,
+      "win_rate": 0.045,
+      "profit_factor": 0.004,
+      "avg_net_bps_per_trade": -97.4,
+      "fees_tmn": 30560,
+      "trades_per_day": 0.73
+    },
+    "15": {
+      "net_return_pct": -4.873,
+      "net_pnl_tmn": -48727,
+      "max_drawdown_pct": 4.873,
+      "trades": 22,
+      "win_rate": 0.0,
+      "profit_factor": 0.0,
+      "avg_net_bps_per_trade": -111.3,
+      "fees_tmn": 30539,
+      "trades_per_day": 0.73
+    },
+    "25": {
+      "net_return_pct": 0.0,
+      "net_pnl_tmn": 0,
+      "max_drawdown_pct": 0.0,
+      "trades": 0,
+      "win_rate": null,
+      "profit_factor": null,
+      "avg_net_bps_per_trade": null,
+      "fees_tmn": 0,
+      "trades_per_day": 0.0
+    }
+  },
+  "selection_rule": "highest train net P&L among cost-gated variants with >= 20 train trades; falls back to the operator hypothesis when none qualifies",
+  "selected_on_train": "scalp_reversion_sl0.7_tp1.2",
+  "runtime_s": 677
+}

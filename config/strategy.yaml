@@ -3,6 +3,7 @@
 # Secrets, account scope, competition clock and the market allowlist come from the environment.
 mode: shadow
 db_path: state/trader.sqlite
+live_db_path: state/live.sqlite
 evidence_dir: evidence
 status_path: state/status.json
 competition:
@@ -34,10 +35,17 @@ risk:
   max_total_exposure_fraction: "0.60"
   max_aggregate_stop_risk_fraction: "0.012"
   max_positions: 2
-  daily_loss_fraction: "0.02"
+  daily_loss_fraction: "0.03"
   max_drawdown_fraction: "0.04"
   min_order_tmn: "100000"
   cooldown_bars_after_stop: 4
+  # strict initial allocation (enforced in the risk gate and again in the executor)
+  total_credit_tmn: "5000000"
+  authorized_capital_tmn: "1000000"
+  max_order_tmn: "200000"
+  daily_loss_limit_tmn: "30000"
+  min_net_target_bps: "30"
+  halt_on_foreign_orders: true
 execution:
   entry_cancel_after_seconds: 20
   exit_poll_seconds: 5

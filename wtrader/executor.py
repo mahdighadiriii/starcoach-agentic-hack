@@ -12,6 +12,8 @@ Rules (from the challenge pack and the competition brief):
 - Fills are applied as deltas of the venue's cumulative executed values, so
   repeated observations (polls, restarts, late fills after cancel) cannot double count.
 - Any UNKNOWN/RECONCILING/QUARANTINED order halts new entries; exits continue.
+- An optional guard (kill switch, allocation, duplicates...) runs immediately before
+  the intent is persisted; a refusal records `order_blocked` and nothing is sent.
 """
 from __future__ import annotations
 
@@ -37,15 +39,29 @@ FillCallback = Callable[[dict, Decimal, Decimal, Decimal, Decimal], None]
 
 
 class Executor:
-    def __init__(self, store: Store, venue, on_fill: FillCallback, unknown_deadline_s: int = 120, alert=None):
+    def __init__(self, store: Store, venue, on_fill: FillCallback, unknown_deadline_s: int = 120, alert=None,
+                 guard=None):
         self.store, self.venue, self.on_fill = store, venue, on_fill
         self.unknown_deadline_s = unknown_deadline_s
         self.alert = alert or (lambda *a, **k: None)
+        self.guard = guard
 
     # ---------------------------------------------------------------- submit
     def place(self, *, economic_key: str, symbol: str, side: str, quantity: Decimal, limit_price: Decimal,
               purpose: str, market: Market, decision_id=None, position_id=None) -> str | None:
         cid = client_id_for(economic_key)
+        if self.guard is not None:
+            reason = self.guard(side=side, symbol=symbol, quantity=quantity, limit_price=limit_price, purpose=purpose,
+                                position_id=position_id)
+            if reason:
+                self.store.event("order_blocked", {"economic_key": economic_key, "symbol": symbol, "side": side,
+                                                   "qty": str(quantity), "limit": str(limit_price), "reason": reason})
+                p = self.store.position(position_id) if position_id else None
+                if side == 'BUY' and p and p['status'] == 'PENDING' and dec(p['qty']) == 0 and not self.active_for_position(position_id):
+                    self.store.update_position(position_id, status='CANCELED', exit_reason='ENTRY_BLOCKED',
+                                               closed_at=datetime.now(timezone.utc).isoformat())
+                log.warning("order blocked before submission: %s", reason)
+                return None
         if not self.store.insert_order(client_id=cid, economic_key=economic_key, symbol=symbol, side=side,
                                        purpose=purpose, quantity=quantity, limit_price=limit_price,
                                        decision_id=decision_id, position_id=position_id):
@@ -78,18 +94,16 @@ class Executor:
         dquote = obs.executed_quote - dec(o["applied_quote"])
         dfb = obs.fee_base - dec(o["applied_fee_base"])
         dfq = obs.fee_quote - dec(o["applied_fee_quote"])
-        if dq < 0 or dquote < 0:
+        if dq < 0 or dquote < 0 or dfb < 0 or dfq < 0:
             # cumulative values must be monotonic; a regression means a bad observation
             self.store.event("order_observation_regressed", {"client_id": cid})
             return
         state = obs.state
-        if state == OrderState.UNKNOWN:
-            state = OrderState(o["state"]) if o["state"] not in ("SUBMITTING", "CREATED") else OrderState.UNKNOWN
         if o["state"] == "CANCEL_PENDING" and state in (OrderState.OPEN, OrderState.PARTIALLY_FILLED):
             state = OrderState.CANCEL_PENDING          # cancel not yet confirmed by the venue
         self.store.db.execute("BEGIN IMMEDIATE")
         try:
-            if dq > 0 or dfb > 0 or dfq > 0:
+            if dq > 0 or dquote > 0 or dfb > 0 or dfq > 0:
                 self.on_fill(o, dq, dquote, dfb, dfq)
             self.store.update_order(cid, state=state.value, executed_qty=obs.executed_qty,
                                     executed_quote=obs.executed_quote, fee_base=obs.fee_base, fee_quote=obs.fee_quote,
@@ -113,7 +127,7 @@ class Executor:
         if obs is not None:
             self.apply(cid, obs)
             return
-        if o["state"] in ("UNKNOWN", "SUBMITTING", "RECONCILING"):
+        if o["state"] in ("CREATED", "UNKNOWN", "SUBMITTING", "RECONCILING"):
             age = (datetime.now(timezone.utc) - datetime.fromisoformat(o["submitted_at"] or o["created_at"])).total_seconds()
             if age > self.unknown_deadline_s:
                 self.store.update_order(cid, state="QUARANTINED")
@@ -126,7 +140,7 @@ class Executor:
             self.store.event("order_lookup_missing", {"client_id": cid, "state": o["state"]})
 
     def reconcile_all(self):
-        for o in self.store.orders(("SUBMITTING", "UNKNOWN", "RECONCILING", "OPEN", "PARTIALLY_FILLED",
+        for o in self.store.orders(("CREATED", "SUBMITTING", "UNKNOWN", "RECONCILING", "OPEN", "PARTIALLY_FILLED",
                                     "CANCEL_PENDING", "QUARANTINED")):
             self.reconcile(o)
 
@@ -146,7 +160,7 @@ class Executor:
 
     # ---------------------------------------------------------------- queries
     def unresolved(self) -> list[dict]:
-        return self.store.orders(("SUBMITTING", "UNKNOWN", "RECONCILING", "QUARANTINED"))
+        return self.store.orders(("CREATED", "SUBMITTING", "UNKNOWN", "RECONCILING", "QUARANTINED"))
 
     def active_for_position(self, position_id: str) -> list[dict]:
         return [o for o in self.store.orders(ACTIVE) if o["position_id"] == position_id]

@@ -13,6 +13,7 @@ from decimal import Decimal
 
 from .config import RiskCfg, MarketCfg, CompetitionCfg
 from .models import Book, Market, ceil_step, floor_step, walk_book
+from .markets import DISABLED_MARKETS
 
 D = Decimal
 ZERO = D("0")
@@ -36,6 +37,8 @@ class PortfolioState:
     entries_halted: bool = False          # latched breaker or unresolved order
     halt_reason: str | None = None
     cooldown_symbols: frozenset = frozenset()
+    budget_tmn: Decimal | None = None     # allocation budget (authorized + realized losses); None = unconstrained
+    committed_tmn: Decimal = ZERO         # capital already committed against the budget
 
 
 @dataclass
@@ -75,9 +78,12 @@ class BreakerStatus:
 
 
 def breaker_status(state: PortfolioState, cfg: RiskCfg) -> BreakerStatus:
-    dl = (state.day_start_equity_tmn - state.equity_tmn) / state.day_start_equity_tmn if state.day_start_equity_tmn > 0 else ZERO
+    loss = state.day_start_equity_tmn - state.equity_tmn
+    dl = loss / state.day_start_equity_tmn if state.day_start_equity_tmn > 0 else ZERO
     dd = (state.high_water_tmn - state.equity_tmn) / state.high_water_tmn if state.high_water_tmn > 0 else ZERO
-    return BreakerStatus(dl >= D(cfg.daily_loss_fraction), dd >= D(cfg.max_drawdown_fraction), dl, dd)
+    limit_tmn = D(cfg.daily_loss_limit_tmn) if cfg.daily_loss_limit_tmn else None
+    daily_hit = dl >= D(cfg.daily_loss_fraction) or (limit_tmn is not None and loss >= limit_tmn)
+    return BreakerStatus(daily_hit, dd >= D(cfg.max_drawdown_fraction), dl, dd)
 
 
 def competition_phase(now: datetime, comp: CompetitionCfg) -> str:
@@ -100,7 +106,7 @@ def competition_phase(now: datetime, comp: CompetitionCfg) -> str:
 def evaluate_entry(*, symbol: str, stop: Decimal, max_stop_fraction: Decimal, min_stop_fraction: Decimal,
                    multiplier: Decimal, state: PortfolioState, market: Market | None, book: Book | None,
                    now: datetime, fee_fraction: Decimal, risk: RiskCfg, mcfg: MarketCfg,
-                   allowlist: list[str] | None, phase: str) -> EntryVerdict:
+                   allowlist: list[str] | None, phase: str, target_r: Decimal | None = None) -> EntryVerdict:
     """Every check is evaluated and recorded; the first failure determines the reason."""
     v = EntryVerdict(approved=False)
 
@@ -111,10 +117,13 @@ def evaluate_entry(*, symbol: str, stop: Decimal, max_stop_fraction: Decimal, mi
     check("phase_allows_entries", phase in ("TRADING", "UNSCHEDULED"), phase)
     check("entries_not_halted", not state.entries_halted, state.halt_reason or "")
     br = breaker_status(state, risk)
-    check("daily_loss_limit", not br.daily_loss_hit, f"{br.daily_loss_fraction:.4f} < {risk.daily_loss_fraction}")
+    check("daily_loss_limit", not br.daily_loss_hit,
+          f"{br.daily_loss_fraction:.4f} < {risk.daily_loss_fraction} and loss < {risk.daily_loss_limit_tmn} TMN")
     check("drawdown_breaker", not br.drawdown_hit, f"{br.drawdown_fraction:.4f} < {risk.max_drawdown_fraction}")
     check("ai_multiplier_bounded", multiplier in ALLOWED_MULTIPLIERS, str(multiplier))
     check("market_whitelisted", allowlist is None or symbol in allowlist, symbol)
+    check("market_not_reference_disabled", symbol not in DISABLED_MARKETS,
+          "develop hackathon deny-only reference; allowlist still required for live")
     check("market_metadata_known", market is not None and market.spot_active and market.quote == "TMN", symbol)
     check("not_in_cooldown", symbol not in state.cooldown_symbols, symbol)
     held = {e.symbol for e in state.exposures}
@@ -124,7 +133,7 @@ def evaluate_entry(*, symbol: str, stop: Decimal, max_stop_fraction: Decimal, mi
         check("book_available", False, "missing")
         return _finish(v)
     age = book.age_seconds(now)
-    check("book_fresh", age <= mcfg.max_book_age_seconds, f"age={age:.1f}s")
+    check("book_fresh", 0 <= age <= mcfg.max_book_age_seconds, f"age={age:.1f}s")
     spread = book.spread_bps()
     check("spread_limit", spread is not None and spread <= D(mcfg.max_spread_bps), f"{spread} bps")
     ask = book.best_ask
@@ -149,6 +158,18 @@ def evaluate_entry(*, symbol: str, stop: Decimal, max_stop_fraction: Decimal, mi
     depth_cap_qty = depth_qty * D(mcfg.max_depth_fraction)
     check("aggregate_exposure_capacity", rem_total > 0, f"remaining={rem_total:.0f}")
     check("aggregate_stop_risk_capacity", rem_risk > 0, f"remaining={rem_risk:.0f}")
+    max_order = D(risk.max_order_tmn)
+    rem_alloc = state.budget_tmn - state.committed_tmn if state.budget_tmn is not None else D("1e30")
+    check("allocation_capacity", rem_alloc > 0, f"remaining={min(rem_alloc, D('1e15')):.0f}")
+    # Would the target still pay after both fees, the current spread and exit slippage?
+    net_target_bps = None
+    if target_r is not None and stop < ask:
+        target = ask + (ask - stop) * target_r
+        bid = book.best_bid
+        exit_px = target * (bid / ask) * (1 - D(risk.expected_exit_slippage_bps) / D(10000)) * (1 - fee_fraction)
+        net_target_bps = (exit_px / (ask * (1 + fee_fraction)) - 1) * D(10000)
+        check("net_edge_covers_costs", net_target_bps >= D(risk.min_net_target_bps),
+              f"net target {net_target_bps:.1f} bps >= {risk.min_net_target_bps}")
     if not loss_per_unit or loss_per_unit <= 0 or not all(c.passed for c in v.checks):
         return _finish(v)
 
@@ -159,6 +180,8 @@ def evaluate_entry(*, symbol: str, stop: Decimal, max_stop_fraction: Decimal, mi
         rem_total * multiplier / limit,
         depth_cap_qty,
         state.free_tmn / (limit * (1 + fee_fraction)),
+        max_order / (limit * (1 + fee_fraction)),
+        rem_alloc / (limit * (1 + fee_fraction)),
     ), market.step)
     filled, notional = walk_book(book.asks, q, limit, "BUY")
     avg = notional / filled if filled > 0 else ask
@@ -167,6 +190,9 @@ def evaluate_entry(*, symbol: str, stop: Decimal, max_stop_fraction: Decimal, mi
     check("min_quantity", q >= market.min_quantity, f"{q} >= {market.min_quantity}")
     check("min_notional", notional_at_limit >= max(market.min_notional, D(risk.min_order_tmn)),
           f"{notional_at_limit:.0f} >= {max(market.min_notional, D(risk.min_order_tmn))}")
+    order_tmn = notional_at_limit * (1 + fee_fraction)
+    check("max_order_allocation", order_tmn <= max_order, f"{order_tmn:.0f} <= {max_order:.0f}")
+    check("within_allocation", order_tmn <= rem_alloc, f"{order_tmn:.0f} <= {min(rem_alloc, D('1e15')):.0f}")
     check("balance_sufficient", notional_at_limit * (1 + fee_fraction) <= state.free_tmn,
           f"need={notional_at_limit * (1 + fee_fraction):.0f} free={state.free_tmn:.0f}")
     slip_bps = (avg - ask) / ask * D(10000)

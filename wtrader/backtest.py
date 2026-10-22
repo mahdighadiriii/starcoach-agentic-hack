@@ -8,6 +8,11 @@ Timing model (no look-ahead):
 - Fees: buy fee reduces received base; sell fee reduces quote proceeds.
 - The run is split into consecutive competition-length episodes; the drawdown
   breaker and daily loss limit are evaluated per episode, mirroring a 3-day contest.
+- Optional finer exit series (e.g. 1m bars under 5m signals): entries fill at the
+  open of the first exit bar at least `fill_delay_s` after the decision (execution
+  latency), and stops/targets/time exits are evaluated on every exit bar.
+- Capital is the authorized allocation (risk.authorized_capital_tmn), with the same
+  budget rule as live: realized losses shrink it, profits never grow it.
 """
 from __future__ import annotations
 
@@ -24,7 +29,7 @@ from .ai_agent import BaselineSelector, build_context
 from .config import Settings
 from .models import Book, Candle, Market
 from .risk import OpenRisk, PortfolioState, breaker_status, evaluate_entry, exit_signal
-from .strategy import analyze, apply_market_filter, trail_stop
+from .strategy import analyze, apply_edge_gate, apply_market_filter, trail_stop
 
 D = Decimal
 ZERO = D("0")
@@ -103,14 +108,28 @@ def _synthetic_book(symbol: str, close: Decimal, costs: CostModel, t: int) -> Bo
 
 
 def _market(symbol: str) -> Market:
-    return Market(symbol, symbol, symbol[:-4], "TMN", D("1e-12"), D("1e-12"), ZERO, ZERO)
+    return Market(symbol, symbol, symbol[:-3] if symbol.endswith("TMN") else symbol[:-4], "TMN", D("1e-12"), D("1e-12"), ZERO, ZERO)
+
+
+def allocation_capital(settings: Settings) -> Decimal:
+    a = settings.risk.authorized_capital_tmn
+    return D(a) if a else D(settings.competition.initial_capital_tmn)
 
 
 def run_backtest(settings: Settings, series: dict, start: int, end: int, selector, costs: CostModel,
-                 edge: dict, label: str, episode_days: int = 3, record_decisions: bool = True) -> BtResult:
+                 edge: dict, label: str, episode_days: int = 3, record_decisions: bool = True,
+                 exit_series: dict | None = None, exit_s: int | None = None, fill_delay_s: int = 0,
+                 enforce_edge_gate: bool = True) -> BtResult:
     sc, rc, mc = settings.strategy, settings.risk, settings.market
     sig_s = mc.signal_seconds
-    capital = D(settings.competition.initial_capital_tmn)
+    capital = allocation_capital(settings)
+    step = exit_s if exit_series else sig_s
+    xbars = {s: {c.open_time: c for c in exit_series[s]} for s in series} if exit_series else None
+    if not step or step <= 0 or sig_s % step or not 0 <= fill_delay_s < sig_s:
+        raise ValueError("exit interval/entry latency must fit the signal interval")
+    fill_offset = -(-fill_delay_s // step) * step
+    if fill_offset >= sig_s:
+        raise ValueError("rounded entry latency exceeds the signal interval")
     baseline = BaselineSelector()
     res = BtResult(label)
     # index candles by open_time for O(1) bar lookup
@@ -123,24 +142,27 @@ def run_backtest(settings: Settings, series: dict, start: int, end: int, selecto
     hwm, day, day_start_equity = capital, None, capital
     halted_until_day, latched = None, False
     cooldown: dict[str, int] = {}
+    realized = ZERO
+    latest_marks = {}
     episode_len = episode_days * 86400
 
     def mark(t_close: int) -> Decimal:
         val = cash
         for p in positions.values():
             b = bars[p.symbol].get(t_close - sig_s)
-            px = b.close if b else p.entry_price
+            px = b.close if b else latest_marks.get(p.symbol, p.entry_price)
             val += p.qty * costs.sell_price(px) * (1 - costs.fee_fraction)
         return val
 
     def close_pos(p: BtPosition, raw_px: Decimal, t: int, reason: str, src="", mult=""):
-        nonlocal cash
+        nonlocal cash, realized
         px = costs.sell_price(raw_px)
         gross = p.qty * px
         fee = gross * costs.fee_fraction
         proceeds = gross - fee
         cash += proceeds
         pnl = proceeds - p.cost_tmn
+        realized += pnl
         entry_fee_tmn = p.cost_tmn - p.cost_tmn * (1 - costs.fee_fraction)
         res.trades.append(BtTrade(p.symbol, p.family, p.candidate_id, p.opened_at, t, float(p.entry_price), float(px),
                                   float(p.qty), float(p.cost_tmn), float(proceeds), float(pnl),
@@ -148,6 +170,10 @@ def run_backtest(settings: Settings, series: dict, start: int, end: int, selecto
         del positions[p.symbol]
         if reason == "STOP":
             cooldown[p.symbol] = t + rc.cooldown_bars_after_stop * sig_s
+
+    def open_risk(p, mark_price):
+        stop_value = p.qty * costs.sell_price(p.stop) * (1 - costs.fee_fraction)
+        return OpenRisk(p.symbol, p.qty * mark_price, max(ZERO, p.cost_tmn - stop_value))
 
     pos_meta: dict[str, tuple] = {}
     for t_open in times:
@@ -162,53 +188,89 @@ def run_backtest(settings: Settings, series: dict, start: int, end: int, selecto
                                      "end_equity": float(eq), "return_pct": float((eq / ep_start_equity - 1) * 100)})
             episode_start, ep_start_equity = t_open, cash
             hwm, latched = cash, False
-        d = t_open // 86400
+            realized = ZERO                            # each episode is a fresh allocation
+        from zoneinfo import ZoneInfo
+        d = datetime.fromtimestamp(t_open, ZoneInfo("Asia/Tehran")).date()
         if d != day:
             day, day_start_equity = d, mark(t_open)
 
-        # --- fill pending entries at this bar's open ---
-        for (sym, cand, qty, src, mult) in pending:
-            b = bars[sym].get(t_open)
-            if b is None or sym in positions:
-                continue
-            fill = costs.buy_price(b.open)
-            if fill <= cand.stop or cash < qty * fill:
-                continue
-            cost = qty * fill
-            cash -= cost
-            received = qty * (1 - costs.fee_fraction)
-            positions[sym] = BtPosition(sym, cand.family, cand.candidate_id, received, fill, cost, cand.stop,
-                                        cand.target_for(fill), t_open, cand.max_holding_bars,
-                                        trail_distance=cand.trail_distance, peak=fill)
-            pos_meta[sym] = (src, mult)
-        pending = []
+        # --- per exit bar: fill pending entries (after latency), then exits (stop first) ---
+        for sb in range(t_open, t_close, step):
+            if sb == t_open + fill_offset:
+                for (sym, cand, qty, submitted_limit, src, mult) in pending:
+                    b = (xbars[sym] if xbars else bars[sym]).get(sb)
+                    if b is None or sym in positions:
+                        continue
+                    fill = costs.buy_price(b.open)
+                    # A marketable LIMIT cannot fill above its persisted limit after a gap.
+                    # Recheck sizing, breakers, reservations and costs at the actual fill boundary.
+                    if fill <= cand.stop or fill > submitted_limit or cash < qty * fill or halted_until_day == day or latched:
+                        continue
+                    exposure = tuple(open_risk(p, latest_marks.get(p.symbol, p.entry_price)) for p in positions.values())
+                    current_equity = cash + sum((p.qty * costs.sell_price(latest_marks.get(p.symbol,p.entry_price)) * (1-costs.fee_fraction)
+                                                 for p in positions.values()), ZERO)
+                    fresh = PortfolioState(current_equity,cash,exposure,day_start_equity,hwm,
+                                           budget_tmn=capital+min(ZERO,realized),committed_tmn=sum((p.cost_tmn for p in positions.values()),ZERO))
+                    checked = evaluate_entry(symbol=sym,stop=cand.stop,max_stop_fraction=D(sc.stop_distance_max_fraction),
+                                             min_stop_fraction=D(sc.stop_distance_min_fraction),multiplier=D(mult),state=fresh,
+                                             market=_market(sym),book=_synthetic_book(sym,b.open,costs,sb),
+                                             now=datetime.fromtimestamp(sb,timezone.utc),fee_fraction=costs.fee_fraction,
+                                             risk=rc,mcfg=mc,allowlist=None,phase="TRADING",target_r=cand.target_r)
+                    if not checked.approved:
+                        continue
+                    qty = min(qty, checked.quantity)
+                    cost = qty * fill
+                    cash -= cost
+                    received = qty * (1 - costs.fee_fraction)
+                    positions[sym] = BtPosition(sym, cand.family, cand.candidate_id, received, fill, cost, cand.stop,
+                                                cand.target_for(fill), sb, cand.max_holding_bars,
+                                                trail_distance=cand.trail_distance, peak=fill)
+                    pos_meta[sym] = (src, mult)
+                pending = []
+            for sym, p in list(positions.items()):
+                b = (xbars[sym] if xbars else bars[sym]).get(sb)
+                if b is None:
+                    continue
+                held = sb + step - p.opened_at
+                p.bars_held = held // sig_s
+                latest_marks[sym] = b.close
+                hs = costs.half_spread_bps / D(10000)
+                stop_mid, target_mid = p.stop / (1 - hs), p.target / (1 - hs)
+                if b.low <= stop_mid:
+                    close_pos(p, min(stop_mid, b.open), sb + step, "TRAIL_STOP" if p.stop > p.entry_price else "STOP", *pos_meta[sym])
+                elif b.high >= target_mid:
+                    close_pos(p, max(target_mid, b.open), sb + step, "TARGET", *pos_meta[sym])
+                elif held >= p.max_bars * sig_s:
+                    close_pos(p, b.close, sb + step, "TIME_EXIT", *pos_meta[sym])
+                else:
+                    # ratchet the trailing stop using this bar's high; it applies from the next bar on
+                    p.peak = max(p.peak, b.high * (1 - hs))
+                    p.stop = trail_stop(p.stop, p.peak, p.trail_distance)
 
-        # --- exits on this bar (stop first) ---
-        for sym, p in list(positions.items()):
-            b = bars[sym].get(t_open)
-            if b is None:
-                continue
-            p.bars_held += 1
-            if b.low <= p.stop:
-                close_pos(p, min(p.stop, b.open), t_close, "TRAIL_STOP" if p.stop > p.entry_price else "STOP", *pos_meta[sym])
-            elif b.high >= p.target:
-                close_pos(p, max(p.target, b.open), t_close, "TARGET", *pos_meta[sym])
-            elif p.bars_held >= p.max_bars:
-                close_pos(p, b.close, t_close, "TIME_EXIT", *pos_meta[sym])
-            else:
-                # ratchet the trailing stop using this bar's high; it applies from the next bar on
-                p.peak = max(p.peak, b.high)
-                p.stop = trail_stop(p.stop, p.peak, p.trail_distance)
-
+            # Breakers run on every exit interval, independently of the signal clock.
+            step_equity = cash + sum((p.qty*costs.sell_price(latest_marks.get(p.symbol,p.entry_price))*(1-costs.fee_fraction)
+                                      for p in positions.values()),ZERO)
+            hwm = max(hwm, step_equity)
+            step_state = PortfolioState(step_equity,cash,(),day_start_equity,hwm)
+            step_br = breaker_status(step_state,rc)
+            if step_br.daily_loss_hit:
+                halted_until_day = day
+            if step_br.drawdown_hit:
+                latched = True
+                for p in list(positions.values()):
+                    bar = (xbars[p.symbol] if xbars else bars[p.symbol]).get(sb)
+                    if bar is not None:
+                        close_pos(p,bar.close,sb+step,"BREAKER",*pos_meta.get(p.symbol,("","")))
         equity = mark(t_close)
         hwm = max(hwm, equity)
         res.equity.append((t_close, float(equity)))
-        exposures = tuple(OpenRisk(p.symbol, p.qty * bars[p.symbol][t_open].close if t_open in bars[p.symbol] else p.cost_tmn,
-                                   max(ZERO, p.qty * (bars[p.symbol][t_open].close - p.stop)) if t_open in bars[p.symbol] else ZERO)
+        exposures = tuple(open_risk(p, bars[p.symbol][t_open].close if t_open in bars[p.symbol] else latest_marks.get(p.symbol,p.entry_price))
                           for p in positions.values())
-        state = PortfolioState(equity, cash, exposures, day_start_equity, hwm, entries_halted=latched,
+        state = PortfolioState(equity, cash, exposures, day_start_equity, hwm, entries_halted=latched or halted_until_day == day,
                                halt_reason="drawdown breaker" if latched else None,
-                               cooldown_symbols=frozenset(s for s, u in cooldown.items() if u > t_close))
+                               cooldown_symbols=frozenset(s for s, u in cooldown.items() if u > t_close),
+                               budget_tmn=capital + min(ZERO, realized),
+                               committed_tmn=sum((p.cost_tmn for p in positions.values()), ZERO))
         br = breaker_status(state, rc)
         if br.drawdown_hit and not latched:
             latched = True
@@ -228,6 +290,8 @@ def run_backtest(settings: Settings, series: dict, start: int, end: int, selecto
             analyses.append(analyze(sym, sig[max(0, i_end - 200):i_end], ctx[max(0, j_end - 100):j_end], t_close, sc,
                                     sig_s, mc.context_seconds, mc.warmup_bars))
         analyses = apply_market_filter(analyses, settings.strategy.market_filter_symbol)
+        if enforce_edge_gate:
+            analyses = apply_edge_gate(analyses, edge, sc.edge_gate)
         if not any(a.candidates for a in analyses):
             continue
         portfolio = {"equity_tmn": f"{equity:.0f}", "free_tmn": f"{cash:.0f}",
@@ -247,9 +311,9 @@ def run_backtest(settings: Settings, series: dict, start: int, end: int, selecto
                                      min_stop_fraction=D(sc.stop_distance_min_fraction), multiplier=D(dec.multiplier),
                                      state=state, market=_market(cand.symbol), book=_synthetic_book(cand.symbol, close, costs, t_close),
                                      now=datetime.fromtimestamp(t_close, timezone.utc), fee_fraction=costs.fee_fraction,
-                                     risk=rc, mcfg=mc, allowlist=None, phase="TRADING")
+                                     risk=rc, mcfg=mc, allowlist=None, phase="TRADING", target_r=cand.target_r)
             if verdict.approved:
-                pending.append((cand.symbol, cand, verdict.quantity, dec.source, dec.multiplier))
+                pending.append((cand.symbol, cand, verdict.quantity, verdict.limit_price, dec.source, dec.multiplier))
         if record_decisions:
             res.decisions.append({"t": t_close, "snapshot_id": ctxd["snapshot_id"],
                                   "candidates": [c["candidate_id"] for c in ctxd["candidates"]],
@@ -264,6 +328,8 @@ def run_backtest(settings: Settings, series: dict, start: int, end: int, selecto
         for p in list(positions.values()):
             b = bars[p.symbol].get(last)
             close_pos(p, b.close if b else p.entry_price, last + sig_s, "LIQUIDATION", *pos_meta.get(p.symbol, ("", "")))
+        # Final fees/slippage belong in the last equity mark and drawdown.
+        res.equity.append((last + sig_s,float(cash)))
         if episode_start is not None:
             res.episodes.append({"start": episode_start, "end": last + sig_s, "start_equity": float(ep_start_equity),
                                  "end_equity": float(cash), "return_pct": float((cash / ep_start_equity - 1) * 100), "partial": True})
@@ -301,7 +367,7 @@ def metrics(res: BtResult, capital: float) -> dict:
     wins = [p for p in pnl if p > 0]
     losses = [p for p in pnl if p <= 0]
     eq = [e for _, e in res.equity] or [capital]
-    peak, mdd = eq[0], 0.0
+    peak, mdd = capital, 0.0
     for e in eq:
         peak = max(peak, e)
         mdd = max(mdd, (peak - e) / peak)
@@ -327,6 +393,9 @@ def metrics(res: BtResult, capital: float) -> dict:
         "trades": len(tr),
         "win_rate": round(len(wins) / len(tr), 3) if tr else None,
         "profit_factor": round(sum(wins) / -sum(losses), 3) if losses and sum(losses) < 0 else None,
+        "avg_win_tmn": round(statistics.mean(wins),2) if wins else None,
+        "avg_loss_tmn": round(statistics.mean(losses),2) if losses else None,
+        "average_holding_seconds": round(statistics.mean(t.closed_at-t.opened_at for t in tr),1) if tr else None,
         "avg_pnl_per_trade_tmn": round(sum(pnl) / len(tr)) if tr else None,
         "avg_net_bps_per_trade": round(statistics.mean(t.net_bps for t in tr), 1) if tr else None,
         "fees_tmn": round(sum(t.fees_tmn for t in tr)),

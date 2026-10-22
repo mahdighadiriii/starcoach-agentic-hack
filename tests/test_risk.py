@@ -35,7 +35,8 @@ def test_happy_path_respects_risk_budget_and_caps():
 
 
 def test_multiplier_halves_and_is_bounded():
-    assert run(multiplier=D("0.5")).quantity < run().quantity
+    big = RiskCfg(max_order_tmn="5000000")          # lift the order cap so the risk budget binds
+    assert run(multiplier=D("0.5"), risk=big).quantity < run(risk=big).quantity
     assert "ai_multiplier_bounded" in failed(run(multiplier=D("2.0")))
 
 

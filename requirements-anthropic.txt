@@ -1,0 +1,3 @@
+-r requirements.txt
+# Optional backward-compatible provider; baseline and BoxAPI do not import this SDK.
+anthropic==2.1.0

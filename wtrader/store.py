@@ -83,7 +83,7 @@ class Store:
         self.path = Path(path)
         if str(path) != ":memory:":
             self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.db = sqlite3.connect(str(path), isolation_level=None, check_same_thread=False)
+        self.db = sqlite3.connect(str(path), isolation_level=None, timeout=0.1)
         self.db.row_factory = sqlite3.Row
         self.db.executescript(SCHEMA)
         self.run_id = run_id or self.get_kv("run_id") or f"R{datetime.now(timezone.utc):%Y%m%dT%H%M%S}"
@@ -99,6 +99,13 @@ class Store:
 
     # -------------------------------------------------- runs/events
     def record_run(self, mode: str, manifest: dict):
+        previous = self.db.execute('SELECT mode, manifest_json FROM runs WHERE run_id=?', (self.run_id,)).fetchone()
+        if previous:
+            old = json.loads(previous['manifest_json'])
+            if previous['mode'] != mode or any(old.get(k) != manifest.get(k) for k in ('source_sha256', 'config_hash')):
+                # Retain the account ledger/risk state, but never attribute a changed build to the old manifest.
+                self.run_id = f"R{datetime.now(timezone.utc):%Y%m%dT%H%M%S}-{uuid.uuid4().hex[:6]}"
+                self.set_kv('run_id', self.run_id)
         self.db.execute("INSERT OR IGNORE INTO runs VALUES(?,?,?,?)", (self.run_id, mode, now_iso(), json.dumps(manifest, default=str)))
 
     def event(self, kind: str, payload: dict):

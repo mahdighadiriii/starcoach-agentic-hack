@@ -9,6 +9,7 @@ from wtrader.data import resample
 
 def setup(n=900, wiggle=0.012):
     s = Settings()
+    s.strategy.edge_gate = "advisory"
     s.market.signal_seconds, s.market.context_seconds = 3600, 14400
     s.strategy.enabled_families = ["DONCHIAN_TREND", "CONFIRMED_BREAKOUT"]
     s.strategy.stop_distance_min_fraction, s.strategy.stop_distance_max_fraction = "0.002", "0.2"

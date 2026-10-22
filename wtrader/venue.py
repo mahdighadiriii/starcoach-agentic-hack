@@ -29,10 +29,21 @@ D = Decimal
 
 # ---------------------------------------------------------------- market data
 class WallexMarketData:
+    """Wallex prices. Order books come from the WebSocket depth stream when it holds a fresh two-sided
+    snapshot, otherwise from REST GET /v1/depth (the documented fallback)."""
     label = "wallex"
 
-    def __init__(self, client: WallexClient):
-        self.client = client
+    def __init__(self, client: WallexClient, stream=None, ws_max_age_s: float = 4):
+        self.client, self.stream, self.ws_max_age_s = client, stream, ws_max_age_s
+        self.book_via: dict[str, str] = {}
+
+    def fork_reader(self):
+        # Connection pools/rebinding belong to one reader, never shared between workers.
+        return WallexMarketData(self.client.fork_reader(), self.stream, self.ws_max_age_s)
+
+    def watch(self, symbols: list[str]):
+        if self.stream is not None:
+            self.stream.watch(symbols)
 
     def markets(self) -> dict[str, Market]:
         return self.client.markets()
@@ -41,7 +52,18 @@ class WallexMarketData:
         return self.client.candles(symbol, seconds, start, end)
 
     def book(self, symbol: str) -> Book:
-        return self.client.book(symbol)
+        if self.stream is not None:
+            b = self.stream.book(symbol, self.ws_max_age_s)
+            if b is not None:
+                self.book_via[symbol] = "websocket"
+                return b
+        b = self.client.book(symbol)
+        self.book_via[symbol] = "rest"
+        return b
+
+    def status(self) -> dict:
+        return {"depth_source": "websocket+rest_fallback" if self.stream is not None else "rest",
+                "book_via": dict(self.book_via), "websocket": self.stream.status() if self.stream is not None else None}
 
 
 class BinanceProxyMarketData:
@@ -85,6 +107,46 @@ class BinanceProxyMarketData:
                     datetime.now(timezone.utc))
 
 
+class KucoinProxyMarketData:
+    """Labeled proxy (USDT prices, XXXTMN -> XXX-USDT). Never used for live orders."""
+    label = "kucoin_proxy"
+    URL = "https://api.kucoin.com/api"
+    INTERVAL = {60: "1min", 300: "5min", 900: "15min", 3600: "1hour", 14400: "4hour"}
+
+    def __init__(self, http: httpx.Client | None = None):
+        self.http = http or httpx.Client(timeout=8)
+
+    @staticmethod
+    def _sym(symbol: str) -> str:
+        return symbol[:-3] + "-USDT" if symbol.endswith("TMN") else symbol
+
+    def markets(self) -> dict[str, Market]:
+        r = self.http.get(f"{self.URL}/v2/symbols")
+        r.raise_for_status()
+        out = {}
+        for m in r.json()["data"]:
+            if m.get("quoteCurrency") != "USDT" or not m.get("enableTrading"):
+                continue
+            sym = m["baseCurrency"] + "TMN"
+            out[sym] = Market(sym, m["symbol"], m["baseCurrency"], "TMN", dec(m["priceIncrement"]),
+                              dec(m["baseIncrement"]), dec(m["baseMinSize"]), dec(m.get("minFunds") or "0"))
+        return out
+
+    def candles(self, symbol: str, seconds: int, start: int, end: int) -> list[Candle]:
+        r = self.http.get(f"{self.URL}/v1/market/candles", params={"type": self.INTERVAL[seconds], "symbol": self._sym(symbol),
+                                                                   "startAt": start, "endAt": end})
+        r.raise_for_status()
+        rows = [Candle(int(k[0]), dec(k[1]), dec(k[3]), dec(k[4]), dec(k[2]), dec(k[5])) for k in r.json().get("data") or []]
+        return sorted((c for c in rows if c.open_time % seconds == 0), key=lambda c: c.open_time)
+
+    def book(self, symbol: str) -> Book:
+        r = self.http.get(f"{self.URL}/v1/market/orderbook/level2_20", params={"symbol": self._sym(symbol)})
+        r.raise_for_status()
+        j = r.json()["data"]
+        return Book(symbol, tuple((dec(p), dec(q)) for p, q in j["bids"]), tuple((dec(p), dec(q)) for p, q in j["asks"]),
+                    datetime.now(timezone.utc))
+
+
 # ---------------------------------------------------------------- venues
 class LiveVenue:
     label = "live"
@@ -103,6 +165,9 @@ class LiveVenue:
 
     def balances(self) -> dict[str, Balance]:
         return self.client.balances()
+
+    def open_orders(self) -> list[OrderObservation]:
+        return self.client.open_orders()
 
     def poll(self, books: dict[str, Book]):
         pass
@@ -129,6 +194,9 @@ class PaperVenue:
     orders: dict = field(default_factory=dict)
     inject: list = field(default_factory=list)      # queue of 'reject' | 'timeout_accepted' | 'timeout_lost'
     label: str = "paper"
+    max_book_age_s: float = 8
+    checkpoint: object = None
+    clock: object = None
 
     def __post_init__(self):
         self.lock = threading.Lock()
@@ -149,9 +217,23 @@ class PaperVenue:
 
     def _obs(self, o: _PaperOrder) -> OrderObservation:
         return OrderObservation(o.intent.client_id, o.state, o.executed, o.quote, o.fee_base, o.fee_quote,
-                                {"simulated": True})
+                                {"simulated": True, "symbol": o.intent.symbol, "side": o.intent.side,
+                                 "price": str(o.intent.limit_price), "origQty": str(o.intent.quantity)})
+
+    def open_orders(self) -> list[OrderObservation]:
+        with self.lock:
+            return [self._obs(o) for o in self.orders.values()
+                    if o.state in (OrderState.OPEN, OrderState.PARTIALLY_FILLED)]
 
     def _try_fill(self, o: _PaperOrder, book: Book):
+        now = self.clock() if self.clock else datetime.now(timezone.utc)
+        if not (0 <= book.age_seconds(now) <= self.max_book_age_s) or book.spread_bps() is None:
+            return
+        # A displayed snapshot provides finite liquidity; polling it again cannot refill the same order.
+        token = (book.received_at, book.bids, book.asks)
+        if getattr(o, 'last_book', None) == token:
+            return
+        o.last_book = token
         rem = o.intent.quantity - o.executed
         if rem <= 0:
             return
@@ -191,7 +273,11 @@ class PaperVenue:
                 raise DefinitiveRejection(f"insufficient balance need={need} have={have}")
             o = _PaperOrder(intent, market)
             self.orders[intent.client_id] = o
-            self._try_fill(o, self.book_source.book(intent.symbol))
+            try:
+                self._try_fill(o, self.book_source.book(intent.symbol))
+            finally:
+                self._save()
+
             if mode == "timeout_accepted":
                 raise AmbiguousSubmission("injected timeout after acceptance")
             return self._obs(o)
@@ -206,6 +292,7 @@ class PaperVenue:
             o = self.orders.get(client_id)
             if o and o.state in (OrderState.OPEN, OrderState.PARTIALLY_FILLED):
                 o.state = OrderState.CANCELED
+                self._save()
             return self._obs(o) if o else None
 
     def poll(self, books: dict[str, Book]):
@@ -214,3 +301,28 @@ class PaperVenue:
             for o in self.orders.values():
                 if o.state in (OrderState.OPEN, OrderState.PARTIALLY_FILLED) and o.intent.symbol in books:
                     self._try_fill(o, books[o.intent.symbol])
+            self._save()
+
+    def _save(self):
+        if self.checkpoint:
+            self.checkpoint(self.snapshot())
+
+    def snapshot(self):
+        from dataclasses import asdict
+        return {'balances': {c: str(v) for c, v in self.balances_.items()},
+                'orders': [{ 'intent': asdict(o.intent), 'market': asdict(o.market),
+                             'executed': str(o.executed), 'quote': str(o.quote),
+                             'fee_base': str(o.fee_base), 'fee_quote': str(o.fee_quote),
+                             'state': o.state.value} for o in self.orders.values()]}
+
+    def restore(self, state):
+        self.balances_ = {c: dec(v) for c, v in state['balances'].items()}
+        for row in state.get('orders', []):
+            i, m = dict(row['intent']), dict(row['market'])
+            for k in ('limit_price', 'quantity'):
+                i[k] = dec(i[k])
+            for k in ('tick', 'step', 'min_quantity', 'min_notional'):
+                m[k] = dec(m[k])
+            o = _PaperOrder(OrderIntent(**i), Market(**m), *(dec(row[k]) for k in ('executed','quote','fee_base','fee_quote')),
+                            OrderState(row['state']))
+            self.orders[o.intent.client_id] = o

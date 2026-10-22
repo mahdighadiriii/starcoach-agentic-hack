@@ -1,0 +1,234 @@
+{
+  "scope": "validation only; diagnostic perturbations, no parameter selection",
+  "from": 1788793200,
+  "to": 1790089200,
+  "results": {
+    "DONCHIAN_TREND": [
+      {
+        "changes": {
+          "atr_stop_multiplier": "2.5"
+        },
+        "metrics": {
+          "label": "DONCHIAN_TREND",
+          "net_pnl_tmn": -1941,
+          "net_return_pct": -0.194,
+          "max_drawdown_pct": 2.022,
+          "trades": 7,
+          "win_rate": 0.286,
+          "profit_factor": 0.88,
+          "avg_win_tmn": 7114.4,
+          "avg_loss_tmn": -3233.87,
+          "average_holding_seconds": 51960,
+          "avg_pnl_per_trade_tmn": -277,
+          "avg_net_bps_per_trade": -53.2,
+          "fees_tmn": 7444,
+          "exit_reasons": {
+            "STOP": 4,
+            "TRAIL_STOP": 2,
+            "LIQUIDATION": 1
+          },
+          "by_family": {
+            "DONCHIAN_TREND": {
+              "trades": 7,
+              "net_pnl_tmn": -1941,
+              "mean_net_bps": -53.2,
+              "win_rate": 0.286
+            }
+          },
+          "episodes": 0,
+          "episode_return_pct": null,
+          "decision_points": 0,
+          "selected": 0,
+          "held": 0,
+          "selector_sources": {},
+          "differs_from_baseline": 0
+        }
+      },
+      {
+        "changes": {
+          "atr_stop_multiplier": "3.5"
+        },
+        "metrics": {
+          "label": "DONCHIAN_TREND",
+          "net_pnl_tmn": 2588,
+          "net_return_pct": 0.259,
+          "max_drawdown_pct": 1.03,
+          "trades": 5,
+          "win_rate": 0.4,
+          "profit_factor": 1.314,
+          "avg_win_tmn": 5409.68,
+          "avg_loss_tmn": -2743.9,
+          "average_holding_seconds": 107208,
+          "avg_pnl_per_trade_tmn": 518,
+          "avg_net_bps_per_trade": 56.9,
+          "fees_tmn": 5748,
+          "exit_reasons": {
+            "STOP": 2,
+            "TRAIL_STOP": 2,
+            "TIME_EXIT": 1
+          },
+          "by_family": {
+            "DONCHIAN_TREND": {
+              "trades": 5,
+              "net_pnl_tmn": 2588,
+              "mean_net_bps": 56.9,
+              "win_rate": 0.4
+            }
+          },
+          "episodes": 0,
+          "episode_return_pct": null,
+          "decision_points": 0,
+          "selected": 0,
+          "held": 0,
+          "selector_sources": {},
+          "differs_from_baseline": 0
+        }
+      }
+    ],
+    "SCALP_REVERSION": [
+      {
+        "changes": {
+          "scalp_stop_fraction": ".005",
+          "scalp_target_fraction": ".009"
+        },
+        "metrics": {
+          "label": "SCALP_REVERSION",
+          "net_pnl_tmn": 0,
+          "net_return_pct": 0.0,
+          "max_drawdown_pct": 0.0,
+          "trades": 0,
+          "win_rate": null,
+          "profit_factor": null,
+          "avg_win_tmn": null,
+          "avg_loss_tmn": null,
+          "average_holding_seconds": null,
+          "avg_pnl_per_trade_tmn": null,
+          "avg_net_bps_per_trade": null,
+          "fees_tmn": 0,
+          "exit_reasons": {},
+          "by_family": {},
+          "episodes": 0,
+          "episode_return_pct": null,
+          "decision_points": 0,
+          "selected": 0,
+          "held": 0,
+          "selector_sources": {},
+          "differs_from_baseline": 0
+        }
+      },
+      {
+        "changes": {
+          "scalp_stop_fraction": ".010",
+          "scalp_target_fraction": ".018"
+        },
+        "metrics": {
+          "label": "SCALP_REVERSION",
+          "net_pnl_tmn": -24085,
+          "net_return_pct": -2.409,
+          "max_drawdown_pct": 2.466,
+          "trades": 11,
+          "win_rate": 0.0,
+          "profit_factor": 0.0,
+          "avg_win_tmn": null,
+          "avg_loss_tmn": -2189.57,
+          "average_holding_seconds": 1592.7,
+          "avg_pnl_per_trade_tmn": -2190,
+          "avg_net_bps_per_trade": -110.1,
+          "fees_tmn": 15263,
+          "exit_reasons": {
+            "TIME_EXIT": 9,
+            "STOP": 2
+          },
+          "by_family": {
+            "SCALP_REVERSION": {
+              "trades": 11,
+              "net_pnl_tmn": -24085,
+              "mean_net_bps": -110.1,
+              "win_rate": 0.0
+            }
+          },
+          "episodes": 0,
+          "episode_return_pct": null,
+          "decision_points": 0,
+          "selected": 0,
+          "held": 0,
+          "selector_sources": {},
+          "differs_from_baseline": 0
+        }
+      }
+    ],
+    "SCALP_MOMENTUM": [
+      {
+        "changes": {
+          "scalp_stop_fraction": ".005",
+          "scalp_target_fraction": ".009"
+        },
+        "metrics": {
+          "label": "SCALP_MOMENTUM",
+          "net_pnl_tmn": 0,
+          "net_return_pct": 0.0,
+          "max_drawdown_pct": 0.0,
+          "trades": 0,
+          "win_rate": null,
+          "profit_factor": null,
+          "avg_win_tmn": null,
+          "avg_loss_tmn": null,
+          "average_holding_seconds": null,
+          "avg_pnl_per_trade_tmn": null,
+          "avg_net_bps_per_trade": null,
+          "fees_tmn": 0,
+          "exit_reasons": {},
+          "by_family": {},
+          "episodes": 0,
+          "episode_return_pct": null,
+          "decision_points": 0,
+          "selected": 0,
+          "held": 0,
+          "selector_sources": {},
+          "differs_from_baseline": 0
+        }
+      },
+      {
+        "changes": {
+          "scalp_stop_fraction": ".010",
+          "scalp_target_fraction": ".018"
+        },
+        "metrics": {
+          "label": "SCALP_MOMENTUM",
+          "net_pnl_tmn": -50007,
+          "net_return_pct": -5.001,
+          "max_drawdown_pct": 5.001,
+          "trades": 27,
+          "win_rate": 0.074,
+          "profit_factor": 0.01,
+          "avg_win_tmn": 244.49,
+          "avg_loss_tmn": -2019.85,
+          "average_holding_seconds": 1686.7,
+          "avg_pnl_per_trade_tmn": -1852,
+          "avg_net_bps_per_trade": -93.1,
+          "fees_tmn": 37492,
+          "exit_reasons": {
+            "TIME_EXIT": 23,
+            "STOP": 3,
+            "BREAKER": 1
+          },
+          "by_family": {
+            "SCALP_MOMENTUM": {
+              "trades": 27,
+              "net_pnl_tmn": -50007,
+              "mean_net_bps": -93.1,
+              "win_rate": 0.074
+            }
+          },
+          "episodes": 0,
+          "episode_return_pct": null,
+          "decision_points": 0,
+          "selected": 0,
+          "held": 0,
+          "selector_sources": {},
+          "differs_from_baseline": 0
+        }
+      }
+    ]
+  }
+}

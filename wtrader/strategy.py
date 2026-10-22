@@ -13,6 +13,19 @@ from . import indicators as ind
 from .config import StrategyCfg
 from .models import Candle
 
+# Bump a family's version whenever its entry/exit rules change. The run's strategy version is derived
+# from the families actually enabled, so the dashboard and manifest name the code that is running.
+FAMILY_VERSIONS = {"DONCHIAN_TREND": "1.0.1", "TREND_PULLBACK": "1.0.1", "CONFIRMED_BREAKOUT": "1.0.1",
+                   "RSI_REVERSION": "1.0.1", "SCALP_MOMENTUM": "1.0.1", "SCALP_REVERSION": "1.0.1"}
+
+
+def strategy_version(families: list[str], signal_seconds: int, context_seconds: int) -> str:
+    """e.g. 'scalp-momentum/1.0.0 [5m/1h]'. Unknown families are named with version '?'."""
+    def tf(sec):
+        return f"{sec // 3600}h" if sec % 3600 == 0 else f"{sec // 60}m"
+    fams = "+".join(f"{f.lower().replace('_', '-')}/{FAMILY_VERSIONS.get(f, '?')}" for f in sorted(families))
+    return f"{fams} [{tf(signal_seconds)}/{tf(context_seconds)}]"
+
 D = Decimal
 
 
@@ -74,13 +87,21 @@ def classify_regime(ema20_ctx, ema50_ctx, slope_ctx, atr_pct) -> str:
 
 def analyze(symbol: str, sig: list[Candle], ctx: list[Candle], as_of: int, cfg: StrategyCfg,
             sig_s: int = 900, ctx_s: int = 3600, warmup: int = 120) -> Analysis:
-    sig = closed(sig, sig_s, as_of)
-    ctx = closed(ctx, ctx_s, as_of)
+    sig = sorted(closed(sig, sig_s, as_of), key=lambda c: c.open_time)
+    ctx = sorted(closed(ctx, ctx_s, as_of), key=lambda c: c.open_time)
     if len(sig) < warmup or len(ctx) < 60:
         return Analysis(symbol, as_of, "INSUFFICIENT_DATA", {"bars_15m": len(sig), "bars_1h": len(ctx)}, ())
     # the latest signal bar must be the one that just closed (no stale data)
-    if sig[-1].open_time + sig_s < as_of - sig_s:
+    if sig[-1].open_time + sig_s != as_of - as_of % sig_s:
         return Analysis(symbol, as_of, "INSUFFICIENT_DATA", {"stale_last_bar": sig[-1].open_time}, ())
+
+    expected_ctx_close = as_of - as_of % ctx_s
+    if ctx[-1].open_time + ctx_s != expected_ctx_close:
+        return Analysis(symbol, as_of, "INSUFFICIENT_DATA", {"stale_context_bar": ctx[-1].open_time}, ())
+    for rows, interval, n in ((sig, sig_s, warmup), (ctx, ctx_s, 60)):
+        tail = rows[-n:]
+        if any(b.open_time - a.open_time != interval for a, b in zip(tail, tail[1:])):
+            return Analysis(symbol, as_of, "INSUFFICIENT_DATA", {"candle_gaps": True}, ())
 
     o, h, l, c, v = (_f(getattr(x, k) for x in sig) for k in ("open", "high", "low", "close", "volume"))
     ch = _f(x.close for x in ctx)
@@ -104,6 +125,9 @@ def analyze(symbol: str, sig: list[Candle], ctx: list[Candle], as_of: int, cfg: 
         "distance_ema20_atr": (c[i] - e20[i]) / atr_v if atr_v else None,
         "regime": regime,
     }
+    scalp = {"SCALP_MOMENTUM", "SCALP_REVERSION"} & set(cfg.enabled_families)
+    if scalp:
+        feats["prior_high_scalp"] = ind.prior_high(h, cfg.scalp_breakout_lookback, i)
     feats = {k: (round(x, 10) if isinstance(x, float) else x) for k, x in feats.items()}
     cands: list[Candidate] = []
     if atr_v and atr_v > 0 and None not in (e20[i], e50[i], r[i], vol_ratio, hi20):
@@ -139,10 +163,42 @@ def analyze(symbol: str, sig: list[Candle], ctx: list[Candle], as_of: int, cfg: 
             if c[i] > hi20 and c[i] > e50[i] and vol_ratio >= float(cfg.min_volume_ratio):
                 make("DONCHIAN_TREND", c[i] - stop_mult * atr_v, target_r=cfg.trend_target_r,
                      max_bars=cfg.trend_max_holding_bars, trail=float(cfg.trail_atr_multiplier) * atr_v)
+        if scalp and uptrend_ctx and atr_pct is not None and atr_pct >= float(cfg.scalp_min_atr_fraction):
+            # Short-duration families: fixed-fraction stop and target, exit within scalp_max_holding_bars.
+            # The ATR floor skips quiet markets where the target is unlikely to be reached in time.
+            sf = float(cfg.scalp_stop_fraction)
+            tr = D(cfg.scalp_target_fraction) / D(cfg.scalp_stop_fraction)
+            hi_s = feats["prior_high_scalp"]
+            if ("SCALP_MOMENTUM" in fams and hi_s is not None and uptrend_15 and c[i] > hi_s and c[i] > e20[i]
+                    and c[i] - hi_s <= atr_v and vol_ratio >= float(cfg.scalp_volume_ratio)
+                    and r[i] <= float(cfg.scalp_rsi_max)):
+                make("SCALP_MOMENTUM", c[i] * (1 - sf), target_r=tr, max_bars=cfg.scalp_max_holding_bars)
+            if ("SCALP_REVERSION" in fams and r[i - 1] is not None and r[i - 1] < float(cfg.scalp_reversion_rsi)
+                    and c[i] > o[i] and c[i] > c[i - 1]):
+                make("SCALP_REVERSION", c[i] * (1 - sf), target_r=tr, max_bars=cfg.scalp_max_holding_bars)
         if "RSI_REVERSION" in fams and uptrend_ctx:
             # oversold dip inside a 1h uptrend, confirmed by a bullish close
             if r[i - 1] is not None and r[i - 1] < 32 and c[i] > o[i] and c[i] > c[i - 1]:
                 make("RSI_REVERSION", min(l[i], l[i - 1]) - 0.2 * atr_v)
+    # Expose exact unmet prerequisites without changing the signal rules.
+    checks = {}
+    for fam in cfg.enabled_families:
+        cks = {"context_uptrend": regime == "TREND_UP"}
+        if fam in ("SCALP_MOMENTUM", "SCALP_REVERSION"):
+            cks["atr_floor"] = atr_pct is not None and atr_pct >= float(cfg.scalp_min_atr_fraction)
+        if fam in ("SCALP_MOMENTUM", "DONCHIAN_TREND"):
+            cks["signal_uptrend"] = e20[i] is not None and e50[i] is not None and e20[i] > e50[i]
+            level = feats.get("prior_high_scalp") if fam == "SCALP_MOMENTUM" else hi20
+            cks["breakout_close"] = level is not None and c[i] > level
+            cks["volume_ratio"] = vol_ratio is not None and vol_ratio >= float(cfg.scalp_volume_ratio if fam == "SCALP_MOMENTUM" else cfg.min_volume_ratio)
+            if fam == "SCALP_MOMENTUM":
+                cks["rsi_ceiling"] = r[i] is not None and r[i] <= float(cfg.scalp_rsi_max)
+                cks["breakout_extension"] = level is not None and atr_v is not None and c[i] - level <= atr_v
+        if fam == "SCALP_REVERSION":
+            cks["prior_rsi_oversold"] = r[i-1] is not None and r[i-1] < float(cfg.scalp_reversion_rsi)
+            cks["bullish_recovery"] = c[i] > o[i] and c[i] > c[i-1]
+        checks[fam] = cks
+    feats["setup_checks"] = checks
     # one candidate per symbol: keep the first family in configured priority order
     if len(cands) > 1:
         order = {f: n for n, f in enumerate(cfg.enabled_families)}
@@ -159,3 +215,15 @@ def apply_market_filter(analyses: list[Analysis], filter_symbol: str | None) -> 
     if ref is not None and ref.regime == "TREND_UP":
         return analyses
     return [Analysis(a.symbol, a.as_of, a.regime, {**a.features, "market_filter": "blocked"}, ()) for a in analyses]
+
+
+def apply_edge_gate(analyses: list[Analysis], edge: dict, mode: str, min_trades: int = 20) -> list[Analysis]:
+    """strict: drop candidates of families without a positive validated edge (>= min_trades, mean net bps > 0)."""
+    if mode != "strict":
+        return analyses
+
+    def ok(fam):
+        e = edge.get(fam) or {}
+        return e.get("trades", 0) >= min_trades and (e.get("mean_net_bps") or 0) > 0
+    return [Analysis(a.symbol, a.as_of, a.regime, {**a.features, "edge_gate": "blocked"} if any(not ok(c.family) for c in a.candidates) else a.features,
+                     tuple(c for c in a.candidates if ok(c.family))) for a in analyses]

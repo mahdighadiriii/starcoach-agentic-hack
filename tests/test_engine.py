@@ -19,7 +19,9 @@ class FakeMD:
     label = "fake"
 
     def __init__(self):
-        self.prices = {"BTCTMN": ("1000000", "1000500"), "ETHTMN": ("100000", "100050")}
+        self.prices = {"BTCTMN": ("1000000", "1000500"), "ETHTMN": ("100000", "100050"), "SOLTMN": ("10000", "10005")}
+        self.qty = "100"
+        self.down = False
 
     def markets(self):
         return {s: mk_market(s, min_notional="10000") for s in self.prices}
@@ -28,8 +30,10 @@ class FakeMD:
         return []
 
     def book(self, symbol):
+        if self.down:
+            raise ConnectionError("market data outage")
         bid, ask = self.prices[symbol]
-        return mk_book(symbol, bid, ask, qty="100")
+        return mk_book(symbol, bid, ask, qty=self.qty)
 
     def set(self, symbol, bid, ask=None):
         self.prices[symbol] = (bid, ask or str(D(bid) * D("1.0005")))
@@ -38,7 +42,9 @@ class FakeMD:
 def settings(tmp_path, end=None):
     s = Settings()
     s.db_path, s.evidence_dir, s.status_path = str(tmp_path / "t.sqlite"), str(tmp_path / "ev"), str(tmp_path / "st.json")
-    s.market.candidate_symbols = ["BTCTMN", "ETHTMN"]
+    s.execution.kill_switch_path = str(tmp_path / "KILL")
+    s.execution.live_arm_path, s.execution.preflight_path = str(tmp_path / "arm.json"), str(tmp_path / "pre.json")
+    s.market.candidate_symbols = ["BTCTMN", "ETHTMN", "SOLTMN"]
     s.strategy.market_filter_symbol = None
     s.strategy.edge_artifact = None
     s.ai.mode = "baseline"
@@ -60,10 +66,11 @@ def make(tmp_path, md=None, venue=None, end=None):
     return eng, md, venue
 
 
-def enter(eng, symbol="BTCTMN", stop="950000"):
+def enter(eng, symbol="BTCTMN", stop="980000", trail="40000", ref=None):
     now = int(datetime.now(timezone.utc).timestamp())
-    cand = Candidate(f"{symbol}-DONCHIAN_TREND-{now}", symbol, "DONCHIAN_TREND", now, D("1000000"), D(stop),
-                     D("0.05"), D("8"), 72, {}, D("40000"))
+    ref = ref or eng.md.prices[symbol][1]
+    cand = Candidate(f"{symbol}-DONCHIAN_TREND-{now}", symbol, "DONCHIAN_TREND", now, D(ref), D(stop),
+                     D("0.05"), D("8"), 72, {}, D(trail) if trail else None)
     a = [Analysis(symbol, now, "TREND_UP", {"rsi14": 55.0}, (cand,))]
     ctx = build_context(as_of=now, analyses=a, portfolio={}, edge={}, feedback={}, minutes_to_entry_cutoff=None)
     did = eng.store.record_decision(snapshot_id=ctx["snapshot_id"], n_candidates=1, action="PENDING", source="baseline",
@@ -121,14 +128,26 @@ def test_drawdown_breaker_flattens_and_latches(tmp_path):
 
 def test_daily_loss_halts_entries(tmp_path):
     eng, md, venue = make(tmp_path)
+    eng.s.risk.risk_per_trade_fraction, eng.s.risk.max_aggregate_stop_risk_fraction = "0.05", "0.2"
+    enter(eng, stop="700000", trail=None)         # 200k position (max order), wide stop, no trailing
     eng.tick()
-    venue.balances_["TMN"] -= D("150000")         # 3% loss vs day start
+    md.set("BTCTMN", "790000")                    # ~-21% on ~160k: > 30k TMN bot loss, < 4% drawdown breaker
     eng.tick()
     st, _ = eng.portfolio_state(datetime.now(timezone.utc))
     assert st.entries_halted and st.halt_reason == "daily loss limit"
+    assert not eng.store.get_kv("breaker_latched")
 
 
-def test_final_liquidation_converts_everything_to_tmn(tmp_path):
+def test_external_tmn_movement_is_not_a_bot_loss(tmp_path):
+    eng, md, venue = make(tmp_path)
+    eng.tick()
+    venue.balances_["TMN"] -= D("1500000")        # someone else moves account funds
+    eng.tick()
+    st, _ = eng.portfolio_state(datetime.now(timezone.utc))
+    assert not st.entries_halted and st.equity_tmn == D("1000000")
+
+
+def test_final_liquidation_exits_bot_positions_and_preserves_external_deposits(tmp_path):
     end = datetime.now(timezone.utc) + timedelta(hours=10)
     eng, md, venue = make(tmp_path, end=end)
     enter(eng)
@@ -143,7 +162,9 @@ def test_final_liquidation_converts_everything_to_tmn(tmp_path):
     for _ in range(3):
         eng.tick()
     rep = json.loads(Path(eng.s.evidence_dir, "final_report.json").read_text())
-    assert rep["simulated"] is True and rep["non_tmn_residuals"] == {} and set(rep["dust_below_min_order"]) <= {"BTC", "ETH"}
+    assert rep["simulated"] is True and set(rep["non_tmn_residuals"]) == {"ETH"} and set(rep["dust_below_min_order"]) <= {"BTC", "ETH"}
+    assert venue.balances_["ETH"] == D("3")
+    assert not any(o["symbol"] == "ETHTMN" for o in eng.store.orders())
     assert D(rep["final_tmn"]) > 0
 
 

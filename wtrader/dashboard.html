@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wallex Trader Monitor</title>
+<style>
+:root{--bg:#f4f4f2;--surface:#fcfcfb;--line:#e4e3df;--text:#0b0b0b;--text2:#52514e;--muted:#8a8984;
+--series:#2a78d6;--good:#0ca30c;--warn:#fab219;--serious:#ec835a;--crit:#d03b3b;--live:#d03b3b;--sim:#2a78d6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121211;--surface:#1a1a19;--line:#2e2e2c;
+--text:#f0efec;--text2:#c3c2b7;--muted:#8f8e86;--series:#3987e5;--sim:#3987e5}}
+:root[data-theme="dark"]{--bg:#121211;--surface:#1a1a19;--line:#2e2e2c;--text:#f0efec;--text2:#c3c2b7;--muted:#8f8e86;--series:#3987e5;--sim:#3987e5}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--line)}
+header h1{font-size:16px;margin:0 8px 0 0}
+.banner{font-weight:700;padding:3px 10px;border-radius:4px;color:#fff;letter-spacing:.02em}
+.banner.sim{background:var(--sim)} .banner.live{background:var(--live)}
+main{max-width:1280px;margin:0 auto;padding:16px}
+section{margin-bottom:20px}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);margin:0 0 8px}
+.grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.tile .k{font-size:12px;color:var(--text2)} .tile .v{font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+.tile .s{font-size:12px;color:var(--muted)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--text2);font-weight:600} td.num,th.num{text-align:right}
+td.wrap{white-space:normal;min-width:240px}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);font-size:12px}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.good .dot{background:var(--good)} .warn .dot{background:var(--warn)} .crit .dot{background:var(--crit)} .serious .dot{background:var(--serious)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button,a.btn{font:inherit;padding:5px 12px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;text-decoration:none}
+button.kill{border-color:var(--crit);color:var(--crit);font-weight:600}
+.muted{color:var(--muted)} .small{font-size:12px}
+#chart{position:relative} #chart svg{display:block;width:100%;height:240px}
+#tip{position:absolute;pointer-events:none;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 8px;font-size:12px;display:none;white-space:nowrap}
+.two{display:grid;gap:12px;grid-template-columns:1fr} @media(min-width:900px){.two{grid-template-columns:1fr 1fr}}
+.err{color:var(--crit)}
+.tag{display:inline-block;padding:1px 6px;border-radius:4px;font-size:11px;font-weight:700;color:#fff}
+.tag.sim{background:var(--sim)} .tag.real{background:var(--live)}
+.cat{display:inline-block;padding:1px 6px;border-radius:4px;font-size:11px;font-weight:600;border:1px solid var(--line)}
+.cat.conn{border-color:var(--crit);color:var(--crit)} .cat.halt{border-color:var(--serious);color:var(--serious)}
+.cat.strat{color:var(--text2)} .cat.entry{border-color:var(--good);color:var(--good)}
+.hint{margin-top:8px;padding:8px 10px;border-left:3px solid var(--warn);background:var(--bg);font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Wallex Trader</h1>
+  <span id="banner" class="banner sim">LOADING</span>
+  <span id="hdr" class="small muted"></span>
+  <span style="flex:1"></span>
+  <a class="btn" href="/api/trades.csv">Trades CSV</a>
+  <a class="btn" href="/api/orders.csv">Orders CSV</a>
+  <button class="kill" id="kill" title="Engage kill switch (halt): no new entries; exits keep running. Clear with: python -m wtrader kill --clear">Kill switch</button>
+</header>
+<main>
+  <div id="fatal" class="err"></div><div id="evaluation" class="hint" hidden></div>
+  <section><h2>Bot status</h2><div class="row" id="pills"></div><div class="small muted" id="statusline" style="margin-top:6px"></div></section>
+  <section><h2>Decision selector</h2><div class="grid" id="llm"></div><div class="small muted" id="llmnote" style="margin-top:6px"></div></section>
+  <section><h2>Wallex connection</h2><div class="row" id="wxpills"></div><div class="grid" id="wx" style="margin-top:8px"></div>
+    <div id="wxhint"></div>
+    <div class="two" style="margin-top:10px"><div class="panel" id="wxbooks"></div><div class="panel" id="wxerrors"></div></div></section>
+  <section><h2>Wallex account balances (exchange)</h2><div class="panel" id="xacct"></div><div class="small muted" id="xacctnote" style="margin-top:6px"></div></section>
+  <section><h2>Account scope, trading credit &amp; fees (read-only)</h2><div class="grid" id="xcredit"></div><div class="panel" id="xfees" style="margin-top:8px"></div><div class="small muted" id="xcreditnote" style="margin-top:6px"></div></section>
+  <section><h2>Bot allocation (enforced by the bot, not by Wallex)</h2><div class="grid" id="account"></div><div class="small muted" id="acctnote" style="margin-top:6px"></div></section>
+  <section><h2>Performance (net of fees, from persisted records)</h2><div class="grid" id="perf"></div></section>
+  <section><h2>Equity (bot allocation)</h2><div class="panel"><div id="chart"><div id="tip"></div></div>
+    <details class="small"><summary>Table view</summary><div id="eqtable"></div></details></div></section>
+  <section><h2>Active positions</h2><div class="panel" id="positions"></div></section>
+  <section><h2>Reporting windows</h2><div class="panel" id="windows"></div></section>
+  <div class="two">
+    <section><h2>Recent trades</h2><div class="panel" id="trades"></div></section>
+    <section><h2>Strategy decisions (why HOLD / rejected)</h2><div class="small muted" id="decsum" style="margin-bottom:6px"></div><div class="panel" id="decisions"></div></section>
+  </div>
+  <section><h2>Execution log (orders) <span id="orderskind"></span></h2><div class="panel" id="orders"></div></section>
+  <div class="two">
+    <section><h2>Errors &amp; blocked orders</h2><div class="panel" id="errors"></div></section>
+    <section><h2>Alerts</h2><div class="panel" id="alerts"></div></section>
+  </div>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const esc = v => String(v ?? "—").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmt = v => (v === null || v === undefined || v === "") ? "—" : (isNaN(+v) ? esc(v) : (+v).toLocaleString("en-US", {maximumFractionDigits: 0}));
+const sgn = v => (v === null || v === undefined) ? "—" : ((+v > 0 ? "+" : "") + fmt(v));
+const px = v => (v === null || v === undefined) ? "—" : (+v).toLocaleString("en-US", {maximumSignificantDigits: 8});
+const ago = iso => { if (!iso) return "never"; const s = (Date.now() - Date.parse(iso)) / 1000; return s < 90 ? Math.round(s) + "s ago" : s < 5400 ? Math.round(s/60) + "m ago" : Math.round(s/3600) + "h ago"; };
+const dur = s => s == null ? "—" : (s >= 3600 ? Math.floor(s/3600) + "h " : "") + Math.floor((s % 3600)/60) + "m " + (s % 60) + "s";
+const tile = (k, v, s) => `<div class="tile"><div class="k">${esc(k)}</div><div class="v">${v}</div>${s ? `<div class="s">${s}</div>` : ""}</div>`;
+const pill = (cls, label) => `<span class="pill ${cls}"><span class="dot"></span>${esc(label)}</span>`;
+function table(rows, cols) {
+  if (!rows || !rows.length) return '<div class="muted small">none</div>';
+  return "<table><thead><tr>" + cols.map(c => `<th class="${c[2]||""}">${esc(c[0])}</th>`).join("") + "</tr></thead><tbody>" +
+    rows.map(r => "<tr>" + cols.map(c => `<td class="${c[2]||""}">${c[1](r)}</td>`).join("") + "</tr>").join("") + "</tbody></table>";
+}
+function chart(points) {
+  const box = $("chart"), tip = $("tip");
+  box.querySelectorAll("svg").forEach(e => e.remove());
+  if (!points.length) { $("eqtable").innerHTML = '<div class="muted">no equity records yet</div>'; return; }
+  const W = box.clientWidth || 800, H = 240, L = 70, R = 12, T = 10, B = 24;
+  const xs = points.map(p => Date.parse(p[0])), ys = points.map(p => +p[1]);
+  let lo = Math.min(...ys), hi = Math.max(...ys); if (hi - lo < 1) { lo -= 500; hi += 500; }
+  const x0 = xs[0], x1 = Math.max(xs[xs.length - 1], x0 + 1);
+  const X = t => L + (t - x0) / (x1 - x0) * (W - L - R), Y = v => T + (hi - v) / (hi - lo) * (H - T - B);
+  const ticks = [lo, (lo + hi) / 2, hi];
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg"); svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.innerHTML = ticks.map(v => `<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/>` +
+      `<text x="${L-6}" y="${Y(v)+4}" text-anchor="end" font-size="11" fill="var(--text2)">${fmt(v)}</text>`).join("") +
+    `<text x="${L}" y="${H-6}" font-size="11" fill="var(--text2)">${new Date(x0).toLocaleString()}</text>` +
+    `<text x="${W-R}" y="${H-6}" font-size="11" text-anchor="end" fill="var(--text2)">${new Date(x1).toLocaleString()}</text>` +
+    `<polyline fill="none" stroke="var(--series)" stroke-width="2" stroke-linejoin="round" points="${xs.map((t,i) => X(t).toFixed(1)+","+Y(ys[i]).toFixed(1)).join(" ")}"/>` +
+    `<line id="xh" y1="${T}" y2="${H-B}" stroke="var(--muted)" stroke-dasharray="3 3" visibility="hidden"/>` +
+    `<circle id="xd" r="4" fill="var(--series)" stroke="var(--surface)" stroke-width="2" visibility="hidden"/>` +
+    `<rect x="${L}" y="${T}" width="${W-L-R}" height="${H-T-B}" fill="transparent" id="hit"/>`;
+  box.insertBefore(svg, tip);
+  const hit = svg.querySelector("#hit"), xh = svg.querySelector("#xh"), xd = svg.querySelector("#xd");
+  hit.addEventListener("mousemove", e => {
+    const r = svg.getBoundingClientRect(), mx = (e.clientX - r.left) * W / r.width;
+    let i = 0, best = Infinity; xs.forEach((t, j) => { const d = Math.abs(X(t) - mx); if (d < best) { best = d; i = j; } });
+    xh.setAttribute("x1", X(xs[i])); xh.setAttribute("x2", X(xs[i])); xd.setAttribute("cx", X(xs[i])); xd.setAttribute("cy", Y(ys[i]));
+    xh.setAttribute("visibility", "visible"); xd.setAttribute("visibility", "visible");
+    tip.style.display = "block"; tip.innerHTML = `${new Date(xs[i]).toLocaleString()}<br><b>${fmt(ys[i])} TMN</b>`;
+    tip.style.left = Math.min(r.width - 170, X(xs[i]) * r.width / W + 10) + "px"; tip.style.top = "8px";
+  });
+  hit.addEventListener("mouseleave", () => { tip.style.display = "none"; xh.setAttribute("visibility", "hidden"); xd.setAttribute("visibility", "hidden"); });
+  const step = Math.max(1, Math.floor(points.length / 30));
+  $("eqtable").innerHTML = table(points.filter((_, i) => i % step === 0).reverse(), [["time", r => esc(r[0])], ["bot equity TMN", r => fmt(r[1]), "num"]]);
+}
+function statsRow(name, s) {
+  return `<tr><td>${esc(name)}</td><td class="num">${s.trades}</td><td class="num">${sgn(s.net_pnl_tmn)}</td><td class="num">${fmt(s.fees_tmn)}</td>` +
+    `<td class="num">${s.win_rate == null ? "—" : (100 * s.win_rate).toFixed(1) + "%"}</td><td class="num">${sgn(s.avg_pnl_tmn)}</td>` +
+    `<td class="num">${sgn(s.avg_win_tmn)}</td><td class="num">${sgn(s.avg_loss_tmn)}</td><td class="num">${s.profit_factor ?? "—"}</td></tr>`;
+}
+async function refresh() {
+  let d;
+  try { d = await (await fetch("/api/dashboard", {cache: "no-store"})).json(); $("fatal").textContent = ""; }
+  catch (e) { $("fatal").textContent = "Dashboard API unreachable: " + e; return; }
+  const st = d.status || {};
+  if (d.error) $("fatal").textContent = d.error;
+  const live = st.simulated === false;
+  const b = $("banner"); b.className = "banner " + (live ? "live" : "sim");
+  b.textContent = live ? "LIVE — REAL EXCHANGE ORDERS" : (st.mode ? `SIMULATED (${String(st.mode).toUpperCase()}) — paper fills` : "NO ENGINE STATUS");
+  $("hdr").textContent = `data: ${st.data_source || "?"}${String(st.data_source || "").includes("proxy") ? " (PROXY prices, not Wallex)" : ""} · venue: ${st.venue || "?"} · run ${st.run_id || "?"} · phase ${st.phase || "?"}`;
+  const c = st.connectivity || {}, ks = st.kill_switch;
+  const halted = st.entries_halted;
+  const booting = String(st.engine_state || "").startsWith("BOOTSTRAP");
+  $("pills").innerHTML = [
+    pill(!d.engine_alive ? "crit" : (booting ? "warn" : "good"), !d.engine_alive ? `engine stale (${ago(st.last_cycle_at)})` :
+      (booting ? `engine starting: ${st.engine_state} (Wallex unreachable?)` : `engine running (${ago(st.last_cycle_at)})`)),
+    pill(c.last_api_ok_at && (Date.now() - Date.parse(c.last_api_ok_at)) < 60000 ? "good" : "crit", `API ok ${ago(c.last_api_ok_at)}`),
+    pill(c.last_market_data_at && (Date.now() - Date.parse(c.last_market_data_at)) < 60000 ? "good" : "warn", `market data ${ago(c.last_market_data_at)}`),
+    pill(ks ? "crit" : "good", ks ? `KILL SWITCH: ${ks.level} (${ks.reason || ""})` : "kill switch clear"),
+    pill(halted ? "warn" : "good", halted ? `entries halted: ${st.halt_reason}` : "entries allowed"),
+    pill(st.breaker_latched ? "crit" : "good", st.breaker_latched ? "drawdown breaker LATCHED" : "drawdown breaker ok"),
+    pill(st.daily_halt ? "crit" : "good", st.daily_halt ? "daily loss limit hit" : "daily loss ok"),
+    pill((st.foreign_open_orders || []).length ? "warn" : "good", `${(st.foreign_open_orders || []).length} foreign open orders`),
+  ].join("");
+  const strat = st.strategy || {};
+  $("statusline").innerHTML = `Mode <b>${esc((st.mode || "?").toUpperCase())}</b> · strategy ${esc((strat.families || []).join(", "))} (${esc(strat.version)}, ${strat.signal_seconds / 60 || "?"}m signal, edge gate ${esc(strat.edge_gate)}) · selector ${esc(strat.selector)}${strat.ai_credentials === false ? ' <span class="err">(no provider credentials: candidates HOLD)</span>' : ""} · config ${esc(strat.config)} · ` +
+    `last error: ${st.last_error ? `<span class="err">${esc(st.last_error.error)} (${ago(st.last_error.at)})</span>` : "none"} · API failures ${c.api_failures ?? 0} · commit ${esc((st.manifest || {}).git_commit || "").slice(0, 10)}`;
+  const lm = st.llm || {};
+  $("llm").innerHTML = [
+    tile("Provider", esc(strat.ai_provider || lm.provider || "unreported"), esc(strat.ai_model || lm.model || "baseline makes no LLM calls")),
+    tile("Request attempts", fmt(lm.request_attempts), `failures ${fmt(lm.failures)} · cache hits ${fmt(lm.cache_hits)}`),
+    tile("Input / output tokens", `${fmt(lm.input_tokens)} / ${fmt(lm.output_tokens)}`, `usage unknown for ${fmt(lm.usage_unknown_calls)} calls`),
+    tile("Estimated LLM cost (USD)", lm.estimated_cost_usd == null ? "unknown" : "$" + esc(lm.estimated_cost_usd), `${fmt(lm.unpriced_calls)} unpriced calls · ${lm.retry_in_s || 0}s retry delay`),
+  ].join("");
+  $("llmnote").textContent = `Current selector process only; per-decision usage is persisted. Estimates use configured prices and do not establish actual charges. Last LLM error: ${lm.last_error || "none"}. LLM failures HOLD; protection runs independently.`;
+  const ex = st.exchange || {}, wx = ex.wallex, md = ex.market_data || {}, ws = md.websocket, xa = ex.account;
+  const fresh = (iso, s) => iso && (Date.now() - Date.parse(iso)) < s * 1000;
+  const proxy = String(st.data_source || "").includes("proxy");
+  const authLabel = {ok: "authenticated", partial: "authenticated · some endpoints denied", rejected: "auth REJECTED (401/403)", not_configured: "no API key configured", unknown: "auth not yet checked"};
+  $("wxpills").innerHTML = !wx ? pill("warn", "Wallex client not in use") : [
+    pill(fresh(wx.last_public_ok_at, 60) ? "good" : (wx.last_public_ok_at ? "warn" : "crit"), `public API ${wx.last_public_ok_at ? "ok " + ago(wx.last_public_ok_at) : "never reached"}`),
+    pill(wx.auth === "ok" ? (fresh(wx.last_auth_ok_at, 120) ? "good" : "warn") : (wx.auth === "rejected" ? "crit" : "warn"), (authLabel[wx.auth] || wx.auth) + (wx.auth === "ok" ? " " + ago(wx.last_auth_ok_at) : "")),
+    pill("warn", wx.sub_account ? "explicit sub-account header set" : "key-default wallet · ownership scope unverified"),
+    pill(wx.circuit_open ? "crit" : "good", wx.circuit_open ? `circuit OPEN (retry in ${wx.circuit_retry_in_s}s)` : "circuit closed"),
+    pill(proxy ? "warn" : "good", proxy ? `prices from ${st.data_source} (not Wallex)` : "prices from Wallex"),
+    pill(ws ? (ws.connected ? "good" : "warn") : "warn", ws ? (ws.connected ? `WebSocket depth live (${ago(ws.last_msg_at)})` : `WebSocket down — REST fallback${ws.fatal ? " · " + ws.fatal : ""}`) : `depth via ${md.depth_source || "REST"}`),
+    pill(wx.trading_enabled ? "crit" : "good", wx.trading_enabled ? "REAL order submission ENABLED" : "real order submission disabled"),
+  ].join("");
+  $("wx").innerHTML = !wx ? "" : [
+    tile("Last successful sync", wx.last_ok_at ? ago(wx.last_ok_at) : "never", esc(wx.base_url) + (wx.proxied ? " via proxy" : "") +
+      (wx.bind_interface ? ` · egress ${esc(wx.bind_interface)} (${esc(wx.local_address)})` : " · default route")),
+    tile("Last market data", c.last_market_data_at ? ago(c.last_market_data_at) : "never", proxy ? "proxy source" : "Wallex"),
+    tile("Last account sync", xa && xa.synced_at ? ago(xa.synced_at) : "never", xa ? esc(xa.endpoint) : "no API key"),
+    tile("Transport failures in a row", wx.consecutive_transport_failures ?? 0, Object.entries(wx.error_counts || {}).map(([k, v]) => `${esc(k)}×${v}`).join(" · ") || "no errors"),
+  ].join("");
+  $("wxhint").innerHTML = wx && wx.hint ? `<div class="hint">${esc(wx.hint)}</div>` : "";
+  const bv = md.book_via || {}, ages = ex.book_age_s || {};
+  $("wxbooks").innerHTML = '<div class="small muted">Order-book freshness</div>' + table(Object.keys(ages).map(k => ({s: k, age: ages[k], via: bv[k] || (proxy ? st.data_source : "—")})),
+    [["market", r => esc(r.s)], ["age", r => `<span class="${r.age > 8 ? "err" : ""}">${r.age}s</span>`, "num"], ["via", r => esc(r.via)]]);
+  const le = wx && wx.last_error;
+  $("wxerrors").innerHTML = '<div class="small muted">Last Wallex API error</div>' + (le ? `<div class="err small">${esc(le.kind)} on ${esc(le.endpoint)} · ${ago(le.at)}</div><div class="small muted">${esc(le.detail)}</div>` : '<div class="muted small">none</div>') +
+    (ws && ws.last_error ? `<div class="small" style="margin-top:6px">WebSocket: ${esc(ws.last_error.kind)} · ${ago(ws.last_error.at)} · reconnects ${ws.reconnects}</div>` : "");
+  const xb = xa ? Object.entries(xa.balances || {}) : [];
+  $("xacct").innerHTML = !xa ? '<div class="muted small">No WALLEX_API_KEY configured: real balances are not read. Add it to .env (never commit it).</div>' :
+    (!fresh(xa.synced_at, 120) ? '<div class="err small">Real balances are stale or not yet verified.</div>' : "") +
+    (xa.error ? `<div class="err small">last read failed: ${esc(xa.error)}</div>` : "") +
+    table(xb.map(([cur, b]) => ({cur, ...b})), [["asset", r => esc(r.cur)], ["available", r => px(r.free), "num"], ["locked", r => px(r.locked), "num"], ["total", r => px(r.total), "num"]]);
+  $("xacctnote").textContent = !xa ? "" : `${xa.read_only ? "Read-only (shadow: the bot trades a simulated paper balance, not these funds)" : "Read by the live venue"} from ${xa.endpoint} · synced ${xa.synced_at ? ago(xa.synced_at) : "never"}. ` +
+    "The whole account balance can exceed the bot's authorized allocation; Wallex does not enforce the allocation.";
+  const cr = (xa || {}).credit || {}, pack = cr.active_package, overview = cr.overview;
+  const loan = pack ? (pack.package || {}).loan : (overview || {}).aggregate?.loan;
+  $("xcredit").innerHTML = [
+    tile("Wallet scope", xa ? (xa.scope === "explicit_sub_account" ? "explicit sub-account" : "key default · unverified") : "not read", "No account scope is auto-selected"),
+    tile("Reported credit loan", loan == null ? "unverified" : fmt(loan), "Balance alone does not identify funding source or hackathon ownership"),
+    tile("Visible sub-accounts", cr.visible_accounts == null ? "unverified" : cr.visible_accounts.length, (cr.visible_accounts || []).map(r => `${esc(r.type)} · ${r.isActive && !r.isSuspend ? "active" : "inactive/suspended"}`).join("; ")),
+    tile("Main-wallet connection", esc(cr.wallet_connection || "unknown"), "Unknown requires verification in Wallex"),
+    tile("Allocation isolation", "UNVERIFIED", "1M TMN allocation is enforced by software"),
+  ].join("");
+  const rates = Object.entries((xa || {}).fee_rates || {}).map(([symbol, r]) => ({symbol, ...r}));
+  const pct = v => v == null ? "unverified" : (100 * Number(v)).toFixed(3) + "%";
+  $("xfees").innerHTML = '<div class="small muted">Actual account coefficients · metadata attempted ' + esc(ago((xa || {}).metadata_attempted_at)) + '</div>' +
+    table(rates, [["market", r => esc(r.symbol)], ["maker", r => pct(r.maker), "num"], ["taker", r => pct(r.taker), "num"]]);
+  const denied = Object.entries((xa || {}).checks || {}).filter(([, r]) => !r.ok).map(([name, r]) => `${name}: ${r.kind || "unverified"}`);
+  $("xcreditnote").textContent = `Funding source remains ${cr.funding_source || "unverified"}. Metadata is cached for up to 5 minutes; simulated fills retain their configured conservative fee assumption. ` + denied.join(" · ");
+  $("evaluation").hidden = !st.experimental;
+  $("evaluation").textContent = "EXPERIMENTAL SHADOW EVALUATION · real Wallex market data · simulated orders · advisory edge gate · strategy edge is unproven";
+  const a = st.allocation || {}, acct = st.account || {}, lim = st.limits || {}, p = d.pnl || {};
+  $("account").innerHTML = [
+    tile(live ? "Total Wallex balance (TMN value)" : "Total paper balance (TMN value)", fmt(acct.value_tmn), (acct.unvalued_assets || []).length ? `unvalued: ${acct.unvalued_assets.join(", ")}` : `TMN free ${fmt(acct.tmn_free)}`),
+    tile("Authorized allocation", fmt(a.authorized_tmn || lim.authorized_capital_tmn), `${fmt(lim.total_credit_tmn)} configured credit reference · budget ${fmt(a.budget_tmn)}`),
+    tile("Available trading capital", fmt(a.available_tmn), `max order ${fmt(lim.max_order_tmn)} · max ${lim.max_positions ?? "?"} positions`),
+    tile("Committed capital", fmt(a.committed_tmn), `positions at cost ${fmt(a.position_cost_tmn)}`),
+    tile("Reserved (open BUY orders)", fmt(a.reserved_tmn), `foreign orders ${fmt(a.foreign_reserved_tmn)}`),
+    tile("Realized P&L (net)", sgn(p.realized_net_tmn), `fees paid ${fmt(p.fees_tmn)}`),
+    tile("Unrealized P&L", sgn(p.unrealized_tmn), p.valuation_current === false ? "STALE VALUATION · protection degraded" : "marked at bid, exit fee deducted"),
+    tile("Starting / current equity", fmt(st.initial_equity_tmn) + " / " + fmt(st.equity_tmn)),
+    tile("Real trading", st.real_trading_enabled ? "ENABLED" : "DISABLED", `protection cycle ${st.cycle_duration_s == null ? "—" : (+st.cycle_duration_s).toFixed(3)} s`),
+    tile("Net P&L after fees", sgn(p.net_after_fees_tmn), `bot equity ${fmt(st.equity_tmn)}`),
+    tile("Current drawdown", (st.drawdown_pct ?? "—") + "%", `max ${st.max_drawdown_pct ?? "—"}% · day loss ${st.daily_loss_pct ?? "—"}% (limit ${fmt(lim.daily_loss_limit_tmn)} TMN)`),
+  ].join("");
+  $("acctnote").textContent = (live ? "Live: the venue's balances are the real Wallex account. " :
+    "SIMULATED: these tiles use the paper venue's balances (prices from " + (st.data_source || "?") + "); nothing here is a real exchange balance. ") +
+    "Equity, sizing, the daily loss limit and the drawdown breaker use only the authorized allocation; the remaining account funds are never traded.";
+  const all = (d.performance || {}).all_records || {};
+  $("perf").innerHTML = [
+    tile("Closed trades", all.trades ?? 0, `${all.wins ?? 0} wins / ${all.losses ?? 0} losses`),
+    tile("Win rate", all.win_rate == null ? "—" : (100 * all.win_rate).toFixed(1) + "%"),
+    tile("Average P&L / trade", sgn(all.avg_pnl_tmn), `avg win ${sgn(all.avg_win_tmn)} · avg loss ${sgn(all.avg_loss_tmn)}`),
+    tile("Profit factor", all.profit_factor ?? "—"),
+    tile("Trading fees", fmt(p.fees_tmn), "open and closed positions"),
+    tile("Average holding time", all.average_holding_seconds == null ? "—" : dur(Math.round(all.average_holding_seconds))),
+  ].join("");
+  chart(d.equity_curve || []);
+  $("positions").innerHTML = table(st.open_positions || [], [
+    ["symbol", r => esc(r.symbol)], ["family", r => esc(r.family)], ["status", r => esc(r.status)],
+    ["entry", r => px(r.entry_price), "num"], ["current bid", r => px(r.current_bid), "num"], ["size (base)", r => px(r.qty), "num"],
+    ["stop", r => px(r.stop), "num"], ["take profit", r => px(r.target), "num"], ["unrealized TMN", r => sgn(r.unrealized_pnl_tmn), "num"],
+    ["fees TMN", r => fmt(r.fees_tmn), "num"], ["held", r => dur(r.duration_s) + ` / max ${dur(r.max_hold_s)}`]]);
+  const perf = d.performance || {};
+  $("windows").innerHTML = '<table><thead><tr><th>window</th><th class="num">trades</th><th class="num">net P&L</th><th class="num">fees</th><th class="num">win rate</th><th class="num">avg</th><th class="num">avg win</th><th class="num">avg loss</th><th class="num">PF</th></tr></thead><tbody>' +
+    [["Since startup", perf.since_startup], ["Last hour", perf.last_hour], ["Today (Tehran)", perf.today_tehran], ["All records", perf.all_records]]
+      .filter(x => x[1]).map(x => statsRow(x[0], x[1])).join("") + "</tbody></table>";
+  $("trades").innerHTML = table(d.recent_trades, [["closed", r => esc((r.closed_at || "").slice(5, 19))], ["symbol", r => esc(r.symbol)],
+    ["exit", r => esc(r.exit_reason)], ["net P&L", r => sgn(r.realized_pnl_tmn), "num"], ["fees", r => fmt(r.fees_tmn), "num"]]);
+  const catCls = c => ["MARKET_DATA_UNAVAILABLE", "NO_SETUP_PARTIAL_DATA", "SELECTOR_ERROR"].includes(c) ? "conn" :
+    (["ENTRIES_HALTED", "PHASE", "RISK_REJECTED", "EXPIRED"].includes(c) ? "halt" : (c === "ENTRY" ? "entry" : "strat"));
+  const ds = d.decision_summary || {};
+  $("decsum").innerHTML = ds.window ? `last ${ds.window}: ` + Object.entries(ds.by_category || {}).map(([k, v]) => `<span class="cat ${catCls(k)}">${esc(k)} ×${v}</span>`).join(" ") +
+    (ds.connectivity_holds ? ` · <span class="err">${ds.connectivity_holds} held for missing market data (connectivity, not strategy)</span>` : "") : "";
+  $("decisions").innerHTML = table(d.decisions, [["time", r => esc((r.created_at || "").slice(11, 19))], ["source", r => esc(r.source)],
+    ["category", r => `<span class="cat ${catCls(r.category)}" title="${esc(Object.entries(r.markets || {}).map(([k, v]) => k + ": " + v).join("\n"))}">${esc(r.category)}</span>`],
+    ["final", r => `<span class="${r.final_action === "RISK_REJECTED" ? "err" : ""}">${esc(r.final_action)}</span>`], ["candidate", r => esc(r.candidate_id)], ["why", r => esc(r.reason), "wrap"]]);
+  const realOrders = d.orders_kind === "REAL_EXCHANGE";
+  $("orderskind").innerHTML = `<span class="tag ${realOrders ? "real" : "sim"}">${realOrders ? "REAL EXCHANGE ORDERS" : "SIMULATED — never sent to Wallex"}</span>`;
+  $("orders").innerHTML = table(d.orders, [["kind", r => `<span class="tag ${r.kind === "REAL_EXCHANGE" ? "real" : "sim"}">${r.kind === "REAL_EXCHANGE" ? "REAL" : "SIM"}</span>`],
+    ["time", r => esc((r.created_at || "").slice(5, 19))], ["symbol", r => esc(r.symbol)], ["side", r => esc(r.side)],
+    ["purpose", r => esc(r.purpose)], ["state", r => esc(r.state)], ["qty", r => px(r.quantity), "num"], ["limit", r => px(r.limit_price), "num"],
+    ["filled", r => px(r.executed_qty), "num"], ["filled TMN", r => fmt(r.executed_quote), "num"],
+    ["fee", r => (+r.fee_quote ? fmt(r.fee_quote) + " TMN" : (+r.fee_base ? px(r.fee_base) + " base" : "0")), "num"], ["error", r => esc(r.error), "wrap"]]);
+  $("errors").innerHTML = table(d.errors, [["time", r => esc((r.at || "").slice(5, 19))], ["kind", r => esc(r.kind)], ["detail", r => esc(r.payload_json).slice(0, 300), "wrap"]]);
+  $("alerts").innerHTML = table(d.alerts, [["time", r => esc((r.at || "").slice(5, 19))], ["alert", r => esc(r.payload_json).slice(0, 300), "wrap"]]);
+}
+$("kill").addEventListener("click", async () => {
+  if (!confirm("Engage the kill switch (halt)?\nNo new entries; open entry orders are canceled; exits keep running.\nClearing it requires the CLI.")) return;
+  const r = await fetch("/api/kill", {method: "POST"}); alert(r.ok ? "Kill switch engaged." : "Failed: " + r.status); refresh();
+});
+refresh(); setInterval(refresh, 5000); window.addEventListener("resize", refresh);
+</script>
+</body>
+</html>

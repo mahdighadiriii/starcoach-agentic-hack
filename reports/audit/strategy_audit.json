@@ -1,0 +1,1569 @@
+{
+  "generated_at": "2026-10-22T20:11:24.176179+00:00",
+  "protocol": {
+    "selection": "fixed original hypotheses; no parameter optimization",
+    "risk_clock": "1m replay exits for all families; continuous risk state within each split",
+    "edge_gate": "offline advisory research only; strict runtime files unchanged",
+    "splits": "proxy 45d train/15d validation/30d test; Wallex 7d/3d/4d",
+    "warning": "proxy test window was previously examined; this is a reanalysis, not a pristine held-out validation"
+  },
+  "datasets": {
+    "kucoin_proxy": {
+      "start": 1784905200,
+      "end": 1792681200,
+      "symbols": [
+        "BTCUSDT",
+        "ETHUSDT",
+        "SOLUSDT",
+        "XRPUSDT",
+        "DOGEUSDT",
+        "BNBUSDT",
+        "ADAUSDT",
+        "TRXUSDT"
+      ],
+      "families": {
+        "DONCHIAN_TREND": {
+          "train": {
+            "label": "DONCHIAN_TREND",
+            "net_pnl_tmn": 47873,
+            "net_return_pct": 4.787,
+            "max_drawdown_pct": 1.213,
+            "trades": 20,
+            "win_rate": 0.55,
+            "profit_factor": 3.646,
+            "avg_win_tmn": 5997.07,
+            "avg_loss_tmn": -2010.56,
+            "average_holding_seconds": 85395,
+            "avg_pnl_per_trade_tmn": 2394,
+            "avg_net_bps_per_trade": 141.7,
+            "fees_tmn": 25308,
+            "exit_reasons": {
+              "TRAIL_STOP": 14,
+              "TIME_EXIT": 1,
+              "STOP": 5
+            },
+            "by_family": {
+              "DONCHIAN_TREND": {
+                "trades": 20,
+                "net_pnl_tmn": 47873,
+                "mean_net_bps": 141.7,
+                "win_rate": 0.55
+              }
+            },
+            "episodes": 0,
+            "episode_return_pct": null,
+            "decision_points": 74,
+            "selected": 74,
+            "held": 0,
+            "selector_sources": {
+              "baseline": 74
+            },
+            "differs_from_baseline": 0,
+            "trades_per_day": 0.444,
+            "candidate_decision_points": 74,
+            "risk_rejections": {
+              "max_concurrent_positions": 16,
+              "min_notional": 2,
+              "no_duplicate_symbol": 36
+            }
+          },
+          "validation": {
+            "label": "DONCHIAN_TREND",
+            "net_pnl_tmn": 801,
+            "net_return_pct": 0.08,
+            "max_drawdown_pct": 1.522,
+            "trades": 6,
+            "win_rate": 0.333,
+            "profit_factor": 1.063,
+            "avg_win_tmn": 6798.98,
+            "avg_loss_tmn": -3199.29,
+            "average_holding_seconds": 61390,
+            "avg_pnl_per_trade_tmn": 133,
+            "avg_net_bps_per_trade": 7.9,
+            "fees_tmn": 6988,
+            "exit_reasons": {
+              "STOP": 4,
+              "TRAIL_STOP": 2
+            },
+            "by_family": {
+              "DONCHIAN_TREND": {
+                "trades": 6,
+                "net_pnl_tmn": 801,
+                "mean_net_bps": 7.9,
+                "win_rate": 0.333
+              }
+            },
+            "episodes": 0,
+            "episode_return_pct": null,
+            "decision_points": 26,
+            "selected": 26,
+            "held": 0,
+            "selector_sources": {
+              "baseline": 26
+            },
+            "differs_from_baseline": 0,
+            "trades_per_day": 0.4,
+            "candidate_decision_points": 26,
+            "risk_rejections": {
+              "max_concurrent_positions": 8,
+              "min_notional": 2,
+              "no_duplicate_symbol": 10
+            }
+          },
+          "test": {
+            "label": "DONCHIAN_TREND",
+            "net_pnl_tmn": -18559,
+            "net_return_pct": -1.856,
+            "max_drawdown_pct": 1.856,
+            "trades": 7,
+            "win_rate": 0.143,
+            "profit_factor": 0.151,
+            "avg_win_tmn": 3293.99,
+            "avg_loss_tmn": -3642.13,
+            "average_holding_seconds": 61302.9,
+            "avg_pnl_per_trade_tmn": -2651,
+            "avg_net_bps_per_trade": -146.0,
+            "fees_tmn": 9211,
+            "exit_reasons": {
+              "STOP": 6,
+              "TRAIL_STOP": 1
+            },
+            "by_family": {
+              "DONCHIAN_TREND": {
+                "trades": 7,
+                "net_pnl_tmn": -18559,
+                "mean_net_bps": -146.0,
+                "win_rate": 0.143
+              }
+            },
+            "episodes": 0,
+            "episode_return_pct": null,
+            "decision_points": 22,
+            "selected": 22,
+            "held": 0,
+            "selector_sources": {
+              "baseline": 22
+            },
+            "differs_from_baseline": 0,
+            "trades_per_day": 0.233,
+            "candidate_decision_points": 22,
+            "risk_rejections": {
+              "max_concurrent_positions": 3,
+              "min_notional": 4,
+              "no_duplicate_symbol": 8
+            }
+          },
+          "validation_cost_sensitivity": {
+            "zero_fee": {
+              "label": "DONCHIAN_TREND",
+              "net_pnl_tmn": 7239,
+              "net_return_pct": 0.724,
+              "max_drawdown_pct": 1.349,
+              "trades": 6,
+              "win_rate": 0.333,
+              "profit_factor": 1.849,
+              "avg_win_tmn": 7885.4,
+              "avg_loss_tmn": -2132.85,
+              "average_holding_seconds": 71680,
+              "avg_pnl_per_trade_tmn": 1207,
+              "avg_net_bps_per_trade": 115.7,
+              "fees_tmn": 0,
+              "exit_reasons": {
+                "STOP": 3,
+                "TRAIL_STOP": 1,
+                "LIQUIDATION": 2
+              },
+              "by_family": {
+                "DONCHIAN_TREND": {
+                  "trades": 6,
+                  "net_pnl_tmn": 7239,
+                  "mean_net_bps": 115.7,
+                  "win_rate": 0.333
+                }
+              },
+              "episodes": 0,
+              "episode_return_pct": null,
+              "decision_points": 26,
+              "selected": 26,
+              "held": 0,
+              "selector_sources": {
+                "baseline": 26
+              },
+              "differs_from_baseline": 0,
+              "trades_per_day": 0.4,
+              "candidate_decision_points": 26,
+              "risk_rejections": {
+                "max_concurrent_positions": 15,
+                "no_duplicate_symbol": 5
+              }
+            },
+            "wide_spread": {
+              "label": "DONCHIAN_TREND",
+              "net_pnl_tmn": -281,
+              "net_return_pct": -0.028,
+              "max_drawdown_pct": 1.568,
+              "trades": 6,
+              "win_rate": 0.333,
+              "profit_factor": 0.979,
+              "avg_win_tmn": 6513.0,
+              "avg_loss_tmn": -3326.64,
+              "average_holding_seconds": 61260,
+              "avg_pnl_per_trade_tmn": -47,
+              "avg_net_bps_per_trade": -3.8,
+              "fees_tmn": 6932,
+              "exit_reasons": {
+                "STOP": 4,
+                "TRAIL_STOP": 2
+              },
+              "by_family": {
+                "DONCHIAN_TREND": {
+                  "trades": 6,
+                  "net_pnl_tmn": -281,
+                  "mean_net_bps": -3.8,
+                  "win_rate": 0.333
+                }
+              },
+              "episodes": 0,
+              "episode_return_pct": null,
+              "decision_points": 26,
+              "selected": 26,
+              "held": 0,
+              "selector_sources": {
+                "baseline": 26
+              },
+              "differs_from_baseline": 0,
+              "trades_per_day": 0.4,
+              "candidate_decision_points": 26,
+              "risk_rejections": {
+                "max_concurrent_positions": 8,
+                "min_notional": 2,
+                "no_duplicate_symbol": 10
+              }
+            }
+          },
+          "forward_windows": [
+            {
+              "label": "DONCHIAN_TREND",
+              "net_pnl_tmn": -18559,
+              "net_return_pct": -1.856,
+              "max_drawdown_pct": 1.856,
+              "trades": 7,
+              "win_rate": 0.143,
+              "profit_factor": 0.151,
+              "avg_win_tmn": 3293.99,
+              "avg_loss_tmn": -3642.13,
+              "average_holding_seconds": 61302.9,
+              "avg_pnl_per_trade_tmn": -2651,
+              "avg_net_bps_per_trade": -146.0,
+              "fees_tmn": 9211,
+              "exit_reasons": {
+                "STOP": 6,
+                "TRAIL_STOP": 1
+              },
+              "by_family": {
+                "DONCHIAN_TREND": {
+                  "trades": 7,
+                  "net_pnl_tmn": -18559,
+                  "mean_net_bps": -146.0,
+                  "win_rate": 0.143
+                }
+              },
+              "episodes": 0,
+              "episode_return_pct": null,
+              "decision_points": 22,
+              "selected": 22,
+              "held": 0,
+              "selector_sources": {
+                "baseline": 22
+              },
+              "differs_from_baseline": 0,
+              "trades_per_day": 0.467,
+              "candidate_decision_points": 22,
+              "risk_rejections": {
+                "max_concurrent_positions": 3,
+                "min_notional": 4,
+                "no_duplicate_symbol": 8
+              }
+            },
+            {
+              "label": "DONCHIAN_TREND",
+              "net_pnl_tmn": 0,
+              "net_return_pct": 0.0,
+              "max_drawdown_pct": 0.0,
+              "trades": 0,
+              "win_rate": null,
+              "profit_factor": null,
+              "avg_win_tmn": null,
+              "avg_loss_tmn": null,
+              "average_holding_seconds": null,
+              "avg_pnl_per_trade_tmn": null,
+              "avg_net_bps_per_trade": null,
+              "fees_tmn": 0,
+              "exit_reasons": {},
+              "by_family": {},
+              "episodes": 0,
+              "episode_return_pct": null,
+              "decision_points": 0,
+              "selected": 0,
+              "held": 0,
+              "selector_sources": {},
+              "differs_from_baseline": 0,
+              "trades_per_day": 0.0,
+              "candidate_decision_points": 0,
+              "risk_rejections": {}
+            }
+          ]
+        },
+        "SCALP_REVERSION": {
+          "train": {
+            "label": "SCALP_REVERSION",
+            "net_pnl_tmn": -42791,
+            "net_return_pct": -4.279,
+            "max_drawdown_pct": 4.327,
+            "trades": 21,
+            "win_rate": 0.0,
+            "profit_factor": 0.0,
+            "avg_win_tmn": null,
+            "avg_loss_tmn": -2037.66,
+            "average_holding_seconds": 1637.1,
+            "avg_pnl_per_trade_tmn": -2038,
+            "avg_net_bps_per_trade": -102.4,
+            "fees_tmn": 29164,
+            "exit_reasons": {
+              "TIME_EXIT": 18,
+              "STOP": 3
+            },
+            "by_family": {
+              "SCALP_REVERSION": {
+                "trades": 21,
+                "net_pnl_tmn": -42791,
+                "mean_net_bps": -102.4,
+                "win_rate": 0.0
+              }
+            },
+            "episodes": 0,
+            "episode_return_pct": null,
+            "decision_points": 55,
+            "selected": 55,
+            "held": 0,
+            "selector_sources": {
+              "baseline": 55
+            },
+            "differs_from_baseline": 0,
+            "trades_per_day": 0.467,
+            "candidate_decision_points": 55,
+            "risk_rejections": {
+              "no_duplicate_symbol": 6,
+              "not_in_cooldown": 3
+            }
+          },
+          "validation": {
+            "label": "SCALP_REVERSION",
+            "net_pnl_tmn": -19888,
+            "net_return_pct": -1.989,
+            "max_drawdown_pct": 1.989,
+            "trades": 10,
+            "win_rate": 0.1,
+            "profit_factor": 0.003,
+            "avg_win_tmn": 67.77,
+            "avg_loss_tmn": -2217.36,
+            "average_holding_seconds": 1398,
+            "avg_pnl_per_trade_tmn": -1989,
+            "avg_net_bps_per_trade": -99.9,
+            "fees_tmn": 13890,
+            "exit_reasons": {
+              "STOP": 4,
+              "TIME_EXIT": 6
+            },
+            "by_family": {
+              "SCALP_REVERSION": {
+                "trades": 10,
+                "net_pnl_tmn": -19888,
+                "mean_net_bps": -99.9,
+                "win_rate": 0.1
+              }
+            },
+            "episodes": 0,
+            "episode_return_pct": null,
+            "decision_points": 22,
+            "selected": 22,
+            "held": 0,
+            "selector_sources": {
+              "baseline": 22
+            },
+            "differs_from_baseline": 0,
+            "trades_per_day": 0.667,
+            "candidate_decision_points": 22,
+            "risk_rejections": {
+              "no_duplicate_symbol": 3,
+              "not_in_cooldown": 4
+            }
+          },
+          "test": {
+            "label": "SCALP_REVERSION",
+            "net_pnl_tmn": -19111,
+            "net_return_pct": -1.911,
+            "max_drawdown_pct": 1.911,
+            "trades": 10,
+            "win_rate": 0.0,
+            "profit_factor": 0.0,
+            "avg_win_tmn": null,
+            "avg_loss_tmn": -1911.1,
+            "average_holding_seconds": 1716,
+            "avg_pnl_per_trade_tmn": -1911,
+            "avg_net_bps_per_trade": -96.0,
+            "fees_tmn": 13892,
+            "exit_reasons": {
+              "TIME_EXIT": 9,
+              "STOP": 1
+            },
+            "by_family": {
+              "SCALP_REVERSION": {
+                "trades": 10,
+                "net_pnl_tmn": -19111,
+                "mean_net_bps": -96.0,
+                "win_rate": 0.0
+              }
+            },
+            "episodes": 0,
+            "episode_return_pct": null,
+            "decision_points": 30,
+            "selected": 30,
+            "held": 0,
+            "selector_sources": {
+              "baseline": 30
+            },
+            "differs_from_baseline": 0,
+            "trades_per_day": 0.333,
+            "candidate_decision_points": 30,
+            "risk_rejections": {
+              "no_duplicate_symbol": 5
+            }
+          },
+          "validation_cost_sensitivity": {
+            "zero_fee": {
+              "label": "SCALP_REVERSION",
+              "net_pnl_tmn": -8224,
+              "net_return_pct": -0.822,
+              "max_drawdown_pct": 0.826,
+              "trades": 13,
+              "win_rate": 0.385,
+              "profit_factor": 0.231,
+              "avg_win_tmn": 493.42,
+              "avg_loss_tmn": -1336.42,
+              "average_holding_seconds": 1269.2,
+              "avg_pnl_per_trade_tmn": -633,
+              "avg_net_bps_per_trade": -31.7,
+              "fees_tmn": 0,
+              "exit_reasons": {
+                "STOP": 6,
+                "TIME_EXIT": 7
+              },
+              "by_family": {
+                "SCALP_REVERSION": {
+                  "trades": 13,
+                  "net_pnl_tmn": -8224,
+                  "mean_net_bps": -31.7,
+                  "win_rate": 0.385
+                }
+              },
+              "episodes": 0,
+              "episode_return_pct": null,
+              "decision_points": 22,
+              "selected": 22,
+              "held": 0,
+              "selector_sources": {
+                "baseline": 22
+              },
+              "differs_from_baseline": 0,
+              "trades_per_day": 0.867,
+              "candidate_decision_points": 22,
+              "risk_rejections": {
+                "no_duplicate_symbol": 4,
+                "not_in_cooldown": 4
+              }
+            },
+            "wide_spread": {
+              "label": "SCALP_REVERSION",
+              "net_pnl_tmn": -21280,
+              "net_return_pct": -2.128,
+              "max_drawdown_pct": 2.128,
+              "trades": 9,
+              "win_rate": 0.0,
+              "profit_factor": 0.0,
+              "avg_win_tmn": null,
+              "avg_loss_tmn": -2364.4,
+              "average_holding_seconds": 1293.3,
+              "avg_pnl_per_trade_tmn": -2364,
+              "avg_net_bps_per_trade": -118.8,
+              "fees_tmn": 12490,
+              "exit_reasons": {
+                "STOP": 4,
+                "TIME_EXIT": 5
+              },
+              "by_family": {
+                "SCALP_REVERSION": {
+                  "trades": 9,
+                  "net_pnl_tmn": -21280,
+                  "mean_net_bps": -118.8,
+                  "win_rate": 0.0
+                }
+              },
+              "episodes": 0,
+              "episode_return_pct": null,
+              "decision_points": 22,
+              "selected": 22,
+              "held": 0,
+              "selector_sources": {
+                "baseline": 22
+              },
+              "differs_from_baseline": 0,
+              "trades_per_day": 0.6,
+              "candidate_decision_points": 22,
+              "risk_rejections": {
+                "no_duplicate_symbol": 3,
+                "not_in_cooldown": 3
+              }
+            }
+          },
+          "forward_windows": [
+            {
+              "label": "SCALP_REVERSION",
+              "net_pnl_tmn": -19111,
+              "net_return_pct": -1.911,
+              "max_drawdown_pct": 1.911,
+              "trades": 10,
+              "win_rate": 0.0,
+              "profit_factor": 0.0,
+              "avg_win_tmn": null,
+              "avg_loss_tmn": -1911.1,
+              "average_holding_seconds": 1716,
+              "avg_pnl_per_trade_tmn": -1911,
+              "avg_net_bps_per_trade": -96.0,
+              "fees_tmn": 13892,
+              "exit_reasons": {
+                "TIME_EXIT": 9,
+                "STOP": 1
+              },
+              "by_family": {
+                "SCALP_REVERSION": {
+                  "trades": 10,
+                  "net_pnl_tmn": -19111,
+                  "mean_net_bps": -96.0,
+                  "win_rate": 0.0
+                }
+              },
+              "episodes": 0,
+              "episode_return_pct": null,
+              "decision_points": 27,
+              "selected": 27,
+              "held": 0,
+              "selector_sources": {
+                "baseline": 27
+              },
+              "differs_from_baseline": 0,
+              "trades_per_day": 0.667,
+              "candidate_decision_points": 27,
+              "risk_rejections": {
+                "no_duplicate_symbol": 5
+              }
+            },
+            {
+              "label": "SCALP_REVERSION",
+              "net_pnl_tmn": 0,
+              "net_return_pct": 0.0,
+              "max_drawdown_pct": 0.0,
+              "trades": 0,
+              "win_rate": null,
+              "profit_factor": null,
+              "avg_win_tmn": null,
+              "avg_loss_tmn": null,
+              "average_holding_seconds": null,
+              "avg_pnl_per_trade_tmn": null,
+              "avg_net_bps_per_trade": null,
+              "fees_tmn": 0,
+              "exit_reasons": {},
+              "by_family": {},
+              "episodes": 0,
+              "episode_return_pct": null,
+              "decision_points": 3,
+              "selected": 3,
+              "held": 0,
+              "selector_sources": {
+                "baseline": 3
+              },
+              "differs_from_baseline": 0,
+              "trades_per_day": 0.0,
+              "candidate_decision_points": 3,
+              "risk_rejections": {}
+            }
+          ]
+        },
+        "SCALP_MOMENTUM": {
+          "train": {
+            "label": "SCALP_MOMENTUM",
+            "net_pnl_tmn": -50605,
+            "net_return_pct": -5.06,
+            "max_drawdown_pct": 5.06,
+            "trades": 46,
+            "win_rate": 0.304,
+            "profit_factor": 0.248,
+            "avg_win_tmn": 1194.93,
+            "avg_loss_tmn": -2104.18,
+            "average_holding_seconds": 1352.6,
+            "avg_pnl_per_trade_tmn": -1100,
+            "avg_net_bps_per_trade": -55.3,
+            "fees_tmn": 64032,
+            "exit_reasons": {
+              "TIME_EXIT": 22,
+              "STOP": 9,
+              "TARGET": 13,
+              "BREAKER": 2
+            },
+            "by_family": {
+              "SCALP_MOMENTUM": {
+                "trades": 46,
+                "net_pnl_tmn": -50605,
+                "mean_net_bps": -55.3,
+                "win_rate": 0.304
+              }
+            },
+            "episodes": 0,
+            "episode_return_pct": null,
+            "decision_points": 184,
+            "selected": 184,
+            "held": 0,
+            "selector_sources": {
+              "baseline": 184
+            },
+            "differs_from_baseline": 0,
+            "trades_per_day": 1.022,
+            "candidate_decision_points": 184,
+            "risk_rejections": {
+              "entries_not_halted": 57,
+              "max_concurrent_positions": 6,
+              "no_duplicate_symbol": 17,
+              "not_in_cooldown": 3
+            }
+          },
+          "validation": {
+            "label": "SCALP_MOMENTUM",
+            "net_pnl_tmn": -50071,
+            "net_return_pct": -5.007,
+            "max_drawdown_pct": 5.007,
+            "trades": 25,
+            "win_rate": 0.08,
+            "profit_factor": 0.024,
+            "avg_win_tmn": 626.69,
+            "avg_loss_tmn": -2231.49,
+            "average_holding_seconds": 1447.2,
+            "avg_pnl_per_trade_tmn": -2003,
+            "avg_net_bps_per_trade": -100.6,
+            "fees_tmn": 34724,
+            "exit_reasons": {
+              "TIME_EXIT": 14,
+              "STOP": 8,
+              "TARGET": 1,
+              "BREAKER": 2
+            },
+            "by_family": {
+              "SCALP_MOMENTUM": {
+                "trades": 25,
+                "net_pnl_tmn": -50071,
+                "mean_net_bps": -100.6,
+                "win_rate": 0.08
+              }
+            },
+            "episodes": 0,
+            "episode_return_pct": null,
+            "decision_points": 117,
+            "selected": 117,
+            "held": 0,
+            "selector_sources": {
+              "baseline": 117
+            },
+            "differs_from_baseline": 0,
+            "trades_per_day": 1.667,
+            "candidate_decision_points": 117,
+            "risk_rejections": {
+              "entries_not_halted": 54,
+              "no_duplicate_symbol": 5
+            }
+          },
+          "test": {
+            "label": "SCALP_MOMENTUM",
+            "net_pnl_tmn": -38171,
+            "net_return_pct": -3.817,
+            "max_drawdown_pct": 3.817,
+            "trades": 19,
+            "win_rate": 0.158,
+            "profit_factor": 0.072,
+            "avg_win_tmn": 989.77,
+            "avg_loss_tmn": -2571.28,
+            "average_holding_seconds": 1487.4,
+            "avg_pnl_per_trade_tmn": -2009,
+            "avg_net_bps_per_trade": -100.9,
+            "fees_tmn": 26390,
+            "exit_reasons": {
+              "TIME_EXIT": 12,
+              "STOP": 6,
+              "TARGET": 1
+            },
+            "by_family": {
+              "SCALP_MOMENTUM": {
+                "trades": 19,
+                "net_pnl_tmn": -38171,
+                "mean_net_bps": -100.9,
+                "win_rate": 0.158
+              }
+            },
+            "episodes": 0,
+            "episode_return_pct": null,
+            "decision_points": 56,
+            "selected": 56,
+            "held": 0,
+            "selector_sources": {
+              "baseline": 56
+            },
+            "differs_from_baseline": 0,
+            "trades_per_day": 0.633,
+            "candidate_decision_points": 56,
+            "risk_rejections": {
+              "max_concurrent_positions": 2,
+              "no_duplicate_symbol": 8
+            }
+          },
+          "validation_cost_sensitivity": {
+            "zero_fee": {
+              "label": "SCALP_MOMENTUM",
+              "net_pnl_tmn": -21926,
+              "net_return_pct": -2.193,
+              "max_drawdown_pct": 2.399,
+              "trades": 67,
+              "win_rate": 0.299,
+              "profit_factor": 0.564,
+              "avg_win_tmn": 1418.4,
+              "avg_loss_tmn": -1070.09,
+              "average_holding_seconds": 1371.0,
+              "avg_pnl_per_trade_tmn": -327,
+              "avg_net_bps_per_trade": -16.4,
+              "fees_tmn": 0,
+              "exit_reasons": {
+                "TIME_EXIT": 37,
+                "STOP": 23,
+                "TARGET": 7
+              },
+              "by_family": {
+                "SCALP_MOMENTUM": {
+                  "trades": 67,
+                  "net_pnl_tmn": -21926,
+                  "mean_net_bps": -16.4,
+                  "win_rate": 0.299
+                }
+              },
+              "episodes": 0,
+              "episode_return_pct": null,
+              "decision_points": 117,
+              "selected": 117,
+              "held": 0,
+              "selector_sources": {
+                "baseline": 117
+              },
+              "differs_from_baseline": 0,
+              "trades_per_day": 4.467,
+              "candidate_decision_points": 117,
+              "risk_rejections": {
+                "max_concurrent_positions": 3,
+                "no_duplicate_symbol": 21,
+                "not_in_cooldown": 1
+              }
+            },
+            "wide_spread": {
+              "label": "SCALP_MOMENTUM",
+              "net_pnl_tmn": -50023,
+              "net_return_pct": -5.002,
+              "max_drawdown_pct": 5.002,
+              "trades": 22,
+              "win_rate": 0.045,
+              "profit_factor": 0.027,
+              "avg_win_tmn": 1406.13,
+              "avg_loss_tmn": -2449.0,
+              "average_holding_seconds": 1339.1,
+              "avg_pnl_per_trade_tmn": -2274,
+              "avg_net_bps_per_trade": -114.2,
+              "fees_tmn": 30538,
+              "exit_reasons": {
+                "TIME_EXIT": 10,
+                "STOP": 10,
+                "TARGET": 1,
+                "BREAKER": 1
+              },
+              "by_family": {
+                "SCALP_MOMENTUM": {
+                  "trades": 22,
+                  "net_pnl_tmn": -50023,
+                  "mean_net_bps": -114.2,
+                  "win_rate": 0.045
+                }
+              },
+              "episodes": 0,
+              "episode_return_pct": null,
+              "decision_points": 117,
+              "selected": 117,
+              "held": 0,
+              "selector_sources": {
+                "baseline": 117
+              },
+              "differs_from_baseline": 0,
+              "trades_per_day": 1.467,
+              "candidate_decision_points": 117,
+              "risk_rejections": {
+                "entries_not_halted": 63,
+                "no_duplicate_symbol": 3
+              }
+            }
+          },
+          "forward_windows": [
+            {
+              "label": "SCALP_MOMENTUM",
+              "net_pnl_tmn": -31882,
+              "net_return_pct": -3.188,
+              "max_drawdown_pct": 3.188,
+              "trades": 16,
+              "win_rate": 0.188,
+              "profit_factor": 0.085,
+              "avg_win_tmn": 989.77,
+              "avg_loss_tmn": -2680.86,
+              "average_holding_seconds": 1428.8,
+              "avg_pnl_per_trade_tmn": -1993,
+              "avg_net_bps_per_trade": -100.1,
+              "fees_tmn": 22224,
+              "exit_reasons": {
+                "TIME_EXIT": 9,
+                "STOP": 6,
+                "TARGET": 1
+              },
+              "by_family": {
+                "SCALP_MOMENTUM": {
+                  "trades": 16,
+                  "net_pnl_tmn": -31882,
+                  "mean_net_bps": -100.1,
+                  "win_rate": 0.188
+                }
+              },
+              "episodes": 0,
+              "episode_return_pct": null,
+              "decision_points": 46,
+              "selected": 46,
+              "held": 0,
+              "selector_sources": {
+                "baseline": 46
+              },
+              "differs_from_baseline": 0,
+              "trades_per_day": 1.067,
+              "candidate_decision_points": 46,
+              "risk_rejections": {
+                "max_concurrent_positions": 2,
+                "no_duplicate_symbol": 7
+              }
+            },
+            {
+              "label": "SCALP_MOMENTUM",
+              "net_pnl_tmn": -6289,
+              "net_return_pct": -0.629,
+              "max_drawdown_pct": 0.629,
+              "trades": 3,
+              "win_rate": 0.0,
+              "profit_factor": 0.0,
+              "avg_win_tmn": null,
+              "avg_loss_tmn": -2096.42,
+              "average_holding_seconds": 1800,
+              "avg_pnl_per_trade_tmn": -2096,
+              "avg_net_bps_per_trade": -105.3,
+              "fees_tmn": 4166,
+              "exit_reasons": {
+                "TIME_EXIT": 3
+              },
+              "by_family": {
+                "SCALP_MOMENTUM": {
+                  "trades": 3,
+                  "net_pnl_tmn": -6289,
+                  "mean_net_bps": -105.3,
+                  "win_rate": 0.0
+                }
+              },
+              "episodes": 0,
+              "episode_return_pct": null,
+              "decision_points": 10,
+              "selected": 10,
+              "held": 0,
+              "selector_sources": {
+                "baseline": 10
+              },
+              "differs_from_baseline": 0,
+              "trades_per_day": 0.2,
+              "candidate_decision_points": 10,
+              "risk_rejections": {
+                "no_duplicate_symbol": 1
+              }
+            }
+          ]
+        }
+      },
+      "row_counts": {
+        "BTCUSDT": 129600,
+        "ETHUSDT": 129600,
+        "SOLUSDT": 129598,
+        "XRPUSDT": 129589,
+        "DOGEUSDT": 129600,
+        "BNBUSDT": 129600,
+        "ADAUSDT": 129600,
+        "TRXUSDT": 129600
+      },
+      "hashes": {
+        "BTCUSDT": "10fbf020e32147fcdd43d4c6a073b85daf6b156091efa28ac3fb17917150c5bc",
+        "ETHUSDT": "7e5718c62a32c5d34f3a1b6e699f9387ba44f1c0d43ce4cb3f23af27c4ef255a",
+        "SOLUSDT": "67ae6ad039e4520e461da80eda5ce1777c930564d5b9912097bc530ae61e2590",
+        "XRPUSDT": "03a6d8073185b6521c8065a181c2f323d65da7ef91684bbb12e1e9af3b54a9a7",
+        "DOGEUSDT": "55568e620a4df5e246c332fac16d421785bdff5ffebfd94dcd7e4024e09d2392",
+        "BNBUSDT": "488fe0599ee85f6367d9d8f7944483e614064bdbf18b90b933e1dba4b4342015",
+        "ADAUSDT": "9d74e6c398ecb66cc381cc263dad57e6612f29feae3696ad4bd596797a431d2b",
+        "TRXUSDT": "e11e284b96d2d1a560b927316ec1109eaf35e43a87e064326be149d39c81049c"
+      }
+    },
+    "wallex": {
+      "start": 1791489600,
+      "end": 1792699200,
+      "symbols": [
+        "BTCTMN",
+        "ETHTMN",
+        "SOLTMN",
+        "XRPTMN",
+        "DOGETMN",
+        "BNBTMN",
+        "ADATMN",
+        "TRXTMN"
+      ],
+      "families": {
+        "DONCHIAN_TREND": {
+          "train": {
+            "label": "DONCHIAN_TREND",
+            "net_pnl_tmn": 0,
+            "net_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "trades": 0,
+            "win_rate": null,
+            "profit_factor": null,
+            "avg_win_tmn": null,
+            "avg_loss_tmn": null,
+            "average_holding_seconds": null,
+            "avg_pnl_per_trade_tmn": null,
+            "avg_net_bps_per_trade": null,
+            "fees_tmn": 0,
+            "exit_reasons": {},
+            "by_family": {},
+            "episodes": 0,
+            "episode_return_pct": null,
+            "decision_points": 0,
+            "selected": 0,
+            "held": 0,
+            "selector_sources": {},
+            "differs_from_baseline": 0,
+            "trades_per_day": 0.0,
+            "candidate_decision_points": 0,
+            "risk_rejections": {}
+          },
+          "validation": {
+            "label": "DONCHIAN_TREND",
+            "net_pnl_tmn": 0,
+            "net_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "trades": 0,
+            "win_rate": null,
+            "profit_factor": null,
+            "avg_win_tmn": null,
+            "avg_loss_tmn": null,
+            "average_holding_seconds": null,
+            "avg_pnl_per_trade_tmn": null,
+            "avg_net_bps_per_trade": null,
+            "fees_tmn": 0,
+            "exit_reasons": {},
+            "by_family": {},
+            "episodes": 0,
+            "episode_return_pct": null,
+            "decision_points": 0,
+            "selected": 0,
+            "held": 0,
+            "selector_sources": {},
+            "differs_from_baseline": 0,
+            "trades_per_day": 0.0,
+            "candidate_decision_points": 0,
+            "risk_rejections": {}
+          },
+          "test": {
+            "label": "DONCHIAN_TREND",
+            "net_pnl_tmn": 0,
+            "net_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "trades": 0,
+            "win_rate": null,
+            "profit_factor": null,
+            "avg_win_tmn": null,
+            "avg_loss_tmn": null,
+            "average_holding_seconds": null,
+            "avg_pnl_per_trade_tmn": null,
+            "avg_net_bps_per_trade": null,
+            "fees_tmn": 0,
+            "exit_reasons": {},
+            "by_family": {},
+            "episodes": 0,
+            "episode_return_pct": null,
+            "decision_points": 0,
+            "selected": 0,
+            "held": 0,
+            "selector_sources": {},
+            "differs_from_baseline": 0,
+            "trades_per_day": 0.0,
+            "candidate_decision_points": 0,
+            "risk_rejections": {}
+          },
+          "validation_cost_sensitivity": {
+            "zero_fee": {
+              "label": "DONCHIAN_TREND",
+              "net_pnl_tmn": 0,
+              "net_return_pct": 0.0,
+              "max_drawdown_pct": 0.0,
+              "trades": 0,
+              "win_rate": null,
+              "profit_factor": null,
+              "avg_win_tmn": null,
+              "avg_loss_tmn": null,
+              "average_holding_seconds": null,
+              "avg_pnl_per_trade_tmn": null,
+              "avg_net_bps_per_trade": null,
+              "fees_tmn": 0,
+              "exit_reasons": {},
+              "by_family": {},
+              "episodes": 0,
+              "episode_return_pct": null,
+              "decision_points": 0,
+              "selected": 0,
+              "held": 0,
+              "selector_sources": {},
+              "differs_from_baseline": 0,
+              "trades_per_day": 0.0,
+              "candidate_decision_points": 0,
+              "risk_rejections": {}
+            },
+            "wide_spread": {
+              "label": "DONCHIAN_TREND",
+              "net_pnl_tmn": 0,
+              "net_return_pct": 0.0,
+              "max_drawdown_pct": 0.0,
+              "trades": 0,
+              "win_rate": null,
+              "profit_factor": null,
+              "avg_win_tmn": null,
+              "avg_loss_tmn": null,
+              "average_holding_seconds": null,
+              "avg_pnl_per_trade_tmn": null,
+              "avg_net_bps_per_trade": null,
+              "fees_tmn": 0,
+              "exit_reasons": {},
+              "by_family": {},
+              "episodes": 0,
+              "episode_return_pct": null,
+              "decision_points": 0,
+              "selected": 0,
+              "held": 0,
+              "selector_sources": {},
+              "differs_from_baseline": 0,
+              "trades_per_day": 0.0,
+              "candidate_decision_points": 0,
+              "risk_rejections": {}
+            }
+          },
+          "forward_windows": [
+            {
+              "label": "DONCHIAN_TREND",
+              "net_pnl_tmn": 0,
+              "net_return_pct": 0.0,
+              "max_drawdown_pct": 0.0,
+              "trades": 0,
+              "win_rate": null,
+              "profit_factor": null,
+              "avg_win_tmn": null,
+              "avg_loss_tmn": null,
+              "average_holding_seconds": null,
+              "avg_pnl_per_trade_tmn": null,
+              "avg_net_bps_per_trade": null,
+              "fees_tmn": 0,
+              "exit_reasons": {},
+              "by_family": {},
+              "episodes": 0,
+              "episode_return_pct": null,
+              "decision_points": 0,
+              "selected": 0,
+              "held": 0,
+              "selector_sources": {},
+              "differs_from_baseline": 0,
+              "trades_per_day": 0.0,
+              "candidate_decision_points": 0,
+              "risk_rejections": {}
+            },
+            {
+              "label": "DONCHIAN_TREND",
+              "net_pnl_tmn": 0,
+              "net_return_pct": 0.0,
+              "max_drawdown_pct": 0.0,
+              "trades": 0,
+              "win_rate": null,
+              "profit_factor": null,
+              "avg_win_tmn": null,
+              "avg_loss_tmn": null,
+              "average_holding_seconds": null,
+              "avg_pnl_per_trade_tmn": null,
+              "avg_net_bps_per_trade": null,
+              "fees_tmn": 0,
+              "exit_reasons": {},
+              "by_family": {},
+              "episodes": 0,
+              "episode_return_pct": null,
+              "decision_points": 0,
+              "selected": 0,
+              "held": 0,
+              "selector_sources": {},
+              "differs_from_baseline": 0,
+              "trades_per_day": 0.0,
+              "candidate_decision_points": 0,
+              "risk_rejections": {}
+            }
+          ]
+        },
+        "SCALP_REVERSION": {
+          "train": {
+            "label": "SCALP_REVERSION",
+            "net_pnl_tmn": -1863,
+            "net_return_pct": -0.186,
+            "max_drawdown_pct": 0.19,
+            "trades": 1,
+            "win_rate": 0.0,
+            "profit_factor": 0.0,
+            "avg_win_tmn": null,
+            "avg_loss_tmn": -1862.92,
+            "average_holding_seconds": 1800,
+            "avg_pnl_per_trade_tmn": -1863,
+            "avg_net_bps_per_trade": -93.6,
+            "fees_tmn": 1390,
+            "exit_reasons": {
+              "TIME_EXIT": 1
+            },
+            "by_family": {
+              "SCALP_REVERSION": {
+                "trades": 1,
+                "net_pnl_tmn": -1863,
+                "mean_net_bps": -93.6,
+                "win_rate": 0.0
+              }
+            },
+            "episodes": 0,
+            "episode_return_pct": null,
+            "decision_points": 1,
+            "selected": 1,
+            "held": 0,
+            "selector_sources": {
+              "baseline": 1
+            },
+            "differs_from_baseline": 0,
+            "trades_per_day": 0.143,
+            "candidate_decision_points": 1,
+            "risk_rejections": {}
+          },
+          "validation": {
+            "label": "SCALP_REVERSION",
+            "net_pnl_tmn": 0,
+            "net_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "trades": 0,
+            "win_rate": null,
+            "profit_factor": null,
+            "avg_win_tmn": null,
+            "avg_loss_tmn": null,
+            "average_holding_seconds": null,
+            "avg_pnl_per_trade_tmn": null,
+            "avg_net_bps_per_trade": null,
+            "fees_tmn": 0,
+            "exit_reasons": {},
+            "by_family": {},
+            "episodes": 0,
+            "episode_return_pct": null,
+            "decision_points": 0,
+            "selected": 0,
+            "held": 0,
+            "selector_sources": {},
+            "differs_from_baseline": 0,
+            "trades_per_day": 0.0,
+            "candidate_decision_points": 0,
+            "risk_rejections": {}
+          },
+          "test": {
+            "label": "SCALP_REVERSION",
+            "net_pnl_tmn": 0,
+            "net_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "trades": 0,
+            "win_rate": null,
+            "profit_factor": null,
+            "avg_win_tmn": null,
+            "avg_loss_tmn": null,
+            "average_holding_seconds": null,
+            "avg_pnl_per_trade_tmn": null,
+            "avg_net_bps_per_trade": null,
+            "fees_tmn": 0,
+            "exit_reasons": {},
+            "by_family": {},
+            "episodes": 0,
+            "episode_return_pct": null,
+            "decision_points": 0,
+            "selected": 0,
+            "held": 0,
+            "selector_sources": {},
+            "differs_from_baseline": 0,
+            "trades_per_day": 0.0,
+            "candidate_decision_points": 0,
+            "risk_rejections": {}
+          },
+          "validation_cost_sensitivity": {
+            "zero_fee": {
+              "label": "SCALP_REVERSION",
+              "net_pnl_tmn": 0,
+              "net_return_pct": 0.0,
+              "max_drawdown_pct": 0.0,
+              "trades": 0,
+              "win_rate": null,
+              "profit_factor": null,
+              "avg_win_tmn": null,
+              "avg_loss_tmn": null,
+              "average_holding_seconds": null,
+              "avg_pnl_per_trade_tmn": null,
+              "avg_net_bps_per_trade": null,
+              "fees_tmn": 0,
+              "exit_reasons": {},
+              "by_family": {},
+              "episodes": 0,
+              "episode_return_pct": null,
+              "decision_points": 0,
+              "selected": 0,
+              "held": 0,
+              "selector_sources": {},
+              "differs_from_baseline": 0,
+              "trades_per_day": 0.0,
+              "candidate_decision_points": 0,
+              "risk_rejections": {}
+            },
+            "wide_spread": {
+              "label": "SCALP_REVERSION",
+              "net_pnl_tmn": 0,
+              "net_return_pct": 0.0,
+              "max_drawdown_pct": 0.0,
+              "trades": 0,
+              "win_rate": null,
+              "profit_factor": null,
+              "avg_win_tmn": null,
+              "avg_loss_tmn": null,
+              "average_holding_seconds": null,
+              "avg_pnl_per_trade_tmn": null,
+              "avg_net_bps_per_trade": null,
+              "fees_tmn": 0,
+              "exit_reasons": {},
+              "by_family": {},
+              "episodes": 0,
+              "episode_return_pct": null,
+              "decision_points": 0,
+              "selected": 0,
+              "held": 0,
+              "selector_sources": {},
+              "differs_from_baseline": 0,
+              "trades_per_day": 0.0,
+              "candidate_decision_points": 0,
+              "risk_rejections": {}
+            }
+          },
+          "forward_windows": [
+            {
+              "label": "SCALP_REVERSION",
+              "net_pnl_tmn": 0,
+              "net_return_pct": 0.0,
+              "max_drawdown_pct": 0.0,
+              "trades": 0,
+              "win_rate": null,
+              "profit_factor": null,
+              "avg_win_tmn": null,
+              "avg_loss_tmn": null,
+              "average_holding_seconds": null,
+              "avg_pnl_per_trade_tmn": null,
+              "avg_net_bps_per_trade": null,
+              "fees_tmn": 0,
+              "exit_reasons": {},
+              "by_family": {},
+              "episodes": 0,
+              "episode_return_pct": null,
+              "decision_points": 0,
+              "selected": 0,
+              "held": 0,
+              "selector_sources": {},
+              "differs_from_baseline": 0,
+              "trades_per_day": 0.0,
+              "candidate_decision_points": 0,
+              "risk_rejections": {}
+            },
+            {
+              "label": "SCALP_REVERSION",
+              "net_pnl_tmn": 0,
+              "net_return_pct": 0.0,
+              "max_drawdown_pct": 0.0,
+              "trades": 0,
+              "win_rate": null,
+              "profit_factor": null,
+              "avg_win_tmn": null,
+              "avg_loss_tmn": null,
+              "average_holding_seconds": null,
+              "avg_pnl_per_trade_tmn": null,
+              "avg_net_bps_per_trade": null,
+              "fees_tmn": 0,
+              "exit_reasons": {},
+              "by_family": {},
+              "episodes": 0,
+              "episode_return_pct": null,
+              "decision_points": 0,
+              "selected": 0,
+              "held": 0,
+              "selector_sources": {},
+              "differs_from_baseline": 0,
+              "trades_per_day": 0.0,
+              "candidate_decision_points": 0,
+              "risk_rejections": {}
+            }
+          ]
+        },
+        "SCALP_MOMENTUM": {
+          "train": {
+            "label": "SCALP_MOMENTUM",
+            "net_pnl_tmn": 0,
+            "net_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "trades": 0,
+            "win_rate": null,
+            "profit_factor": null,
+            "avg_win_tmn": null,
+            "avg_loss_tmn": null,
+            "average_holding_seconds": null,
+            "avg_pnl_per_trade_tmn": null,
+            "avg_net_bps_per_trade": null,
+            "fees_tmn": 0,
+            "exit_reasons": {},
+            "by_family": {},
+            "episodes": 0,
+            "episode_return_pct": null,
+            "decision_points": 1,
+            "selected": 1,
+            "held": 0,
+            "selector_sources": {
+              "baseline": 1
+            },
+            "differs_from_baseline": 0,
+            "trades_per_day": 0.0,
+            "candidate_decision_points": 1,
+            "risk_rejections": {}
+          },
+          "validation": {
+            "label": "SCALP_MOMENTUM",
+            "net_pnl_tmn": 0,
+            "net_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "trades": 0,
+            "win_rate": null,
+            "profit_factor": null,
+            "avg_win_tmn": null,
+            "avg_loss_tmn": null,
+            "average_holding_seconds": null,
+            "avg_pnl_per_trade_tmn": null,
+            "avg_net_bps_per_trade": null,
+            "fees_tmn": 0,
+            "exit_reasons": {},
+            "by_family": {},
+            "episodes": 0,
+            "episode_return_pct": null,
+            "decision_points": 0,
+            "selected": 0,
+            "held": 0,
+            "selector_sources": {},
+            "differs_from_baseline": 0,
+            "trades_per_day": 0.0,
+            "candidate_decision_points": 0,
+            "risk_rejections": {}
+          },
+          "test": {
+            "label": "SCALP_MOMENTUM",
+            "net_pnl_tmn": 0,
+            "net_return_pct": 0.0,
+            "max_drawdown_pct": 0.0,
+            "trades": 0,
+            "win_rate": null,
+            "profit_factor": null,
+            "avg_win_tmn": null,
+            "avg_loss_tmn": null,
+            "average_holding_seconds": null,
+            "avg_pnl_per_trade_tmn": null,
+            "avg_net_bps_per_trade": null,
+            "fees_tmn": 0,
+            "exit_reasons": {},
+            "by_family": {},
+            "episodes": 0,
+            "episode_return_pct": null,
+            "decision_points": 0,
+            "selected": 0,
+            "held": 0,
+            "selector_sources": {},
+            "differs_from_baseline": 0,
+            "trades_per_day": 0.0,
+            "candidate_decision_points": 0,
+            "risk_rejections": {}
+          },
+          "validation_cost_sensitivity": {
+            "zero_fee": {
+              "label": "SCALP_MOMENTUM",
+              "net_pnl_tmn": 0,
+              "net_return_pct": 0.0,
+              "max_drawdown_pct": 0.0,
+              "trades": 0,
+              "win_rate": null,
+              "profit_factor": null,
+              "avg_win_tmn": null,
+              "avg_loss_tmn": null,
+              "average_holding_seconds": null,
+              "avg_pnl_per_trade_tmn": null,
+              "avg_net_bps_per_trade": null,
+              "fees_tmn": 0,
+              "exit_reasons": {},
+              "by_family": {},
+              "episodes": 0,
+              "episode_return_pct": null,
+              "decision_points": 0,
+              "selected": 0,
+              "held": 0,
+              "selector_sources": {},
+              "differs_from_baseline": 0,
+              "trades_per_day": 0.0,
+              "candidate_decision_points": 0,
+              "risk_rejections": {}
+            },
+            "wide_spread": {
+              "label": "SCALP_MOMENTUM",
+              "net_pnl_tmn": 0,
+              "net_return_pct": 0.0,
+              "max_drawdown_pct": 0.0,
+              "trades": 0,
+              "win_rate": null,
+              "profit_factor": null,
+              "avg_win_tmn": null,
+              "avg_loss_tmn": null,
+              "average_holding_seconds": null,
+              "avg_pnl_per_trade_tmn": null,
+              "avg_net_bps_per_trade": null,
+              "fees_tmn": 0,
+              "exit_reasons": {},
+              "by_family": {},
+              "episodes": 0,
+              "episode_return_pct": null,
+              "decision_points": 0,
+              "selected": 0,
+              "held": 0,
+              "selector_sources": {},
+              "differs_from_baseline": 0,
+              "trades_per_day": 0.0,
+              "candidate_decision_points": 0,
+              "risk_rejections": {}
+            }
+          },
+          "forward_windows": [
+            {
+              "label": "SCALP_MOMENTUM",
+              "net_pnl_tmn": 0,
+              "net_return_pct": 0.0,
+              "max_drawdown_pct": 0.0,
+              "trades": 0,
+              "win_rate": null,
+              "profit_factor": null,
+              "avg_win_tmn": null,
+              "avg_loss_tmn": null,
+              "average_holding_seconds": null,
+              "avg_pnl_per_trade_tmn": null,
+              "avg_net_bps_per_trade": null,
+              "fees_tmn": 0,
+              "exit_reasons": {},
+              "by_family": {},
+              "episodes": 0,
+              "episode_return_pct": null,
+              "decision_points": 0,
+              "selected": 0,
+              "held": 0,
+              "selector_sources": {},
+              "differs_from_baseline": 0,
+              "trades_per_day": 0.0,
+              "candidate_decision_points": 0,
+              "risk_rejections": {}
+            },
+            {
+              "label": "SCALP_MOMENTUM",
+              "net_pnl_tmn": 0,
+              "net_return_pct": 0.0,
+              "max_drawdown_pct": 0.0,
+              "trades": 0,
+              "win_rate": null,
+              "profit_factor": null,
+              "avg_win_tmn": null,
+              "avg_loss_tmn": null,
+              "average_holding_seconds": null,
+              "avg_pnl_per_trade_tmn": null,
+              "avg_net_bps_per_trade": null,
+              "fees_tmn": 0,
+              "exit_reasons": {},
+              "by_family": {},
+              "episodes": 0,
+              "episode_return_pct": null,
+              "decision_points": 0,
+              "selected": 0,
+              "held": 0,
+              "selector_sources": {},
+              "differs_from_baseline": 0,
+              "trades_per_day": 0.0,
+              "candidate_decision_points": 0,
+              "risk_rejections": {}
+            }
+          ]
+        }
+      },
+      "row_counts": {
+        "BTCTMN": 20145,
+        "ETHTMN": 20119,
+        "SOLTMN": 20134,
+        "XRPTMN": 20137,
+        "DOGETMN": 20140,
+        "BNBTMN": 20141,
+        "ADATMN": 20144,
+        "TRXTMN": 20138
+      },
+      "hashes": {
+        "BTCTMN": "9733c929137178f25b2cb3ff7df01e112f932bb3442939942619f3cbdf51a086",
+        "ETHTMN": "5d44cb163dcd41ee358ce810a7f029c687efc36154b2d13faecb1cfecda3e134",
+        "SOLTMN": "d627e2bd74c1ff31372151951736ce8cd66aef60027420cc78489b35dc6465df",
+        "XRPTMN": "5069297aa260e3685ae9c189e84a8305ac4fa0ff2ddc2bf4b29daebc509b4a0f",
+        "DOGETMN": "c52d99f3a8284e1ed66ecca81109afbc455be37dbf90912c3781158867d90b1f",
+        "BNBTMN": "630935b3fcb7c390c5789ad540cd7cb07ddd597dbb2876d96caf5fd87970fa6c",
+        "ADATMN": "8b826f7e811e1895d9ee2edd3f3b668be3b49886d88f1bb87dd930bfd2626a00",
+        "TRXTMN": "b855e83ad2a8c99a0fec613d63d5b699f994b3b1825d67ee643ff568bf427392"
+      }
+    }
+  }
+}

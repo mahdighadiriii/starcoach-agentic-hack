@@ -104,9 +104,9 @@ def test_failures_block_entries(client):
     assert d.action == "HOLD" and d.source == "fallback_hold" and d.error
 
 
-def test_outage_baseline_policy():
+def test_legacy_outage_baseline_policy_cannot_generate_a_failure_signal():
     d = LLMSelector(AiCfg(outage_action="BASELINE"), client=FakeClient(exc=ConnectionError())).select(ctx_with())
-    assert d.source == "fallback_baseline" and d.action == "SELECT"
+    assert d.source == "fallback_hold" and d.action == "HOLD" and d.candidate_id is None
 
 
 def test_no_candidates_no_call_and_budget():
